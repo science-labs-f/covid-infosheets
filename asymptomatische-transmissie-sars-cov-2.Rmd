@@ -1,0 +1,51 @@
+---
+title: "Transmissie bij geïnfecteerde mensen zonder ziekteklachten (Asymptomatische transmissie)"
+author: "FF"
+date: "29/12/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+__Dragen besmette gezonde mensen -zonder griepachtige klachten- het coronavirus over? Dat is de essentiële vraag. Bijna iedereen gaat ervan uit dat dit gebeurt. Daarom zijn er coronamaatregelen die burgerrechten al maandenlang aantasten.__
+
+Ik zoek alle bewijsmateriaal. Wie tips heeft voor ontbrekende studies, ik hoor het graag. Voorlopig vond ik deze studies:
+
+- China 10 miljoen deelnemers, Nature
+- Wereldwijd systematisch overzicht, JAMA
+- China, Centers for Disease Control
+- Taiwan, JAMA
+
+# Wuhan, China
+
+Ook in China is men bezorgd rond de mogelijke verspreiding zonder maatregelen bij gezonde mensen. Daarom dat de Chinezen het onderzochten. De resultaten staan nu in [een artikel van Nature](https://www.nature.com/articles/s41467-020-19802-w). In Wuhan testte men 10 miljoen mensen. 300 mensen testten positief maar hadden geen ziekteklachten.
+
+Bij hen had de PCR test een cycle tresholdwaarde (CT) rond de 34. Die hoge CT waarde is al een eerste indicatie dat deze mensen niet voldoende 'levend' virus hebben om het door te kunnen geven ([Overzicht Jefferson en anderen](https://www.medrxiv.org/content/10.1101/2020.08.04.20167932v4)). Bronnenonderzoek startte waardoor 1,174 naaste contacten werden opgespoord. Van hen testte iedereen negatief.
+
+Een dubbelcheck met viruscultuur gebeurde bij de 300 gezonde mensen die positief testten:  er werd geen levend virus gevonden. Iedereen (ook de 1,174 naaste contacten) ging 14 dagen in quarantaine. Niemand werd ziek, noch doken er nieuwe positieve tests op.
+
+Gezonde, toch positief testende mensen kwamen 4 keer vaker voor bij ouderen (≥ 60j ) dan bij jongeren (≤17 j). 190 van de 300 (63%) had antilichamen (IgG en IgM), wat duidt op infectie en een immuunreactie. 110 (37%) mensen hadden geen antilichamen wat kan wijzen op een vals positieve PCR test (gekend probleem bij massatesting) en/of andere delen van de immuniteit die actief waren, maar niet gemeten (T-cellen, belangrijk bij [kruisimmuniteit](herd-immunity.html)). Ik vermoed dat de 110 mensen vals positief waren*. Ze tellen dus niet mee in de bewijsvoering, want ze kunnen per definitie hun infectie niet overdragen.
+
+# Wereldwijd systematisch overzicht, 14 december 2020
+
+[Deze studie](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2774102) voegt 54 relevante studies samen (77,758 deelnemers). Het SARS-Cov-2 virus kon via mensen zonder ziektesymptomen amper 0,7% (95% betrouwbaarheidsinterval (BI), 0%-4.9%) andere mensen infecteren. Dat was 18.0% (95% BI, 14.2%-22.1%) via mensen mét klachten. Dus mensen zonder symptomen lijken 26! keer minder kans te bieden aan het virus om anderen te besmetten. Anders gezegd, je hebt 143 mensen zonder klachten nodig om 1 nieuwe infectie te veroorzaken. Heel wat anders dus dan de 6 mensen mét klachten die je nodig hebt om 1 extra infectie te hebben. 
+
+# China, Guangzhou
+
+[Deze studie](https://wwwnc.cdc.gov/eid/article/26/8/20-1142_article) vond 358 cases (eind maart 2020), waarvan 83 (23%) zonder klachten. Dat leidde tot 0.8% (BI 0.2–5.6) nieuwe infecties bij hun nabije contacten. Dat is vergelijkbaar met de voorgenoemde studie. Zeer laag dus.
+
+# Taiwan, 
+
+[Deze studie](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/2765641) bij 100 mensen vond dat mensen zonder symptomen 0 (nul) nieuwe infecties doorgaven. 
+
+# Conclusie
+
+Het onderzoek totnogtoe vindt geen bewijs dat gezonde mensen zonder klachten -zelfs als ze positief testen- het virus verspreiden. De gevonden verspreiding is zo klein dat in vergelijking met mensen die wél symptomen hebben, ze geen betekenisvolle rol kunnen spelen in de voortgang van de epidemie. Dit impliceert dat coronamaatregelen voor niet-zieke mensen om het verspreiden van het virus in te perken, geen wetenschappelijke basis hebben. Ze hebben wel een theoretische basis, maar die blijkt niet overeen te komen met de werkelijke omstandigheden. Omwille van de maatschappelijk draagwijdte, is het prioritair om verder onderzoek te doen naar asymptomatische transmissie. 
+
+In België zouden we nu besmettingen kunnen nagaan door bronnenonderzoek bij alle positief geteste mensen zonder klachten. Liefst tijdens een periode waar er veel infecties zijn. Zo heb je meer betrouwbare meetresultaten. Bedoeling is zo meer zekerheid te krijgen rond het opheffen / behouden van coronamaatregelen.
+
+*Uitleg vals positieven a.h.v [FDA Calculator for Positive Predictive Value (PPV) and Negative Predictive Value (NPV) for individual tests](https://www.fda.gov/media/137612/download). Aan een voorkomen van 0,0043%, test sensitiviteit van 70% en test specificiteit van 95% [1] zijn alle positieve resultaten in werkelijkheid negatief. Aangezien 63% van de studiedeelnemers antilichamen hadden, was er bij hen wél sprake van een infectie.
+
+1. [Interpreting a covid-19 test result, BMJ](https://www.bmj.com/content/369/bmj.m1808)

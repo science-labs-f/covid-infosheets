@@ -1,0 +1,15 @@
+---
+title: "Gezonde geest, gezonde afweer"
+author: "FF"
+date: "10/6/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Stress vermindert de afweer tegen virusinfecties
+
+> We willen zo gezond mogelijk uit de crisis raken. De paradox is dat we voor oplosingen kiezen die de stress verhogen. En ons dus dieper in de crisis duwen. 
+

@@ -1,0 +1,45 @@
+---
+title: "volksgezondheid"
+author: "FF"
+date: "8/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Covid binnen de gehele volksgezondheid
+
+```{r}
+library(stringr)
+
+pop_n = 11400000
+
+d <- read.delim("./data/bevolking_age.csv", sep = ";")
+
+# calculate HLY of total population
+life_exp = 75
+
+for (row in 1:nrow(d)) {
+  # format 
+  d['hly'] = ifelse (d$age < life_exp,  (life_exp - d$age) * d$n, 0)
+}
+
+total_pop_health_pot = sum(d$hly)
+
+DALY_allcause_allages = 3193582
+
+#example Korea
+DALY_covid_allages_rate = 4.930 #https://jkms.org/DOIx.php?id=10.3346/jkms.2020.35.e199#T1
+DALY_covid_allages = pop_n*DALY_covid_allages_rate/100000
+
+DALY_covid_FF_report <- 7707
+#DALY calcs, this study fir Italy showd YLD is marginal so YLL used # https://www.mdpi.com/1660-4601/17/12/4233/htm
+DALY_suicide_YLL_person_all_ages <- 30.3
+
+
+```
+
+`r format(total_pop_health_pot, scientific=F, big.mark=",")` potentiële levenjaren in de Belgische bevolking
+Verlies door covid-19: `r format(DALY_covid_allages, scientific=F, big.mark=",")`

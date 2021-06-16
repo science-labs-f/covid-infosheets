@@ -1,0 +1,20 @@
+---
+title: "Is massa-screening goed voor de volksgezondheid?"
+author: "FF"
+date: "19/1/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## De uitrol van sneltests riskeert ernstige schade te berokkenen aan de volksgezondheid
+
+**De overheid rolt de sneltest uit zonder ondersteunend wetenschappelijk bewijs. Ongenuanceerde media-koppen leiden tot de verspreiding van misleidende informatie zoals "Even betrouwbaar als een klassieke coronatest". We lezen of horen het regelmatig zoals ook [op de VRT website](https://www.vrt.be/vrtnws/nl/2020/12/16/pilootproject-in-14-huisartsenpraktijken-en-3-testcentra-test-pa/) Dit kan ernstige schade berokkenen. Ik vraag de overheid dringend van koers te veranderen.**  
+
+Zo zegt Sciensano aan dat de antigeen-sneltesten massaal ingezet kunnen worden [vanaf 2 of meer 'cases'](https://covid-19.sciensano.be/sites/default/files/Covid19/COVID-19_Case%20definition_Testing_NL.pdf) in het onderwijs, kinderopvang, bedrijven, politie, enz... [3,5 miljoen testen kocht de Belgische overheid reeds aan](https://news.belgium.be/nl/covid-19-overheidsopdracht-over-de-aankoop-van-sneltesten). Dit is dus een kostelijke keuze. Maar is die keuze terecht?
+
+Stel je hebt zoals recent in een Edegemse school 2 besmettingen bij kinderen. De overheid test iedereen op school, incluis de ouders en personeel. Dan gaat [60% van de geïnfecteerde mensen zonder symptomen onopgemerkt blijven]( https://www.liverpool.ac.uk/media/livacuk/coronavirus/Liverpool,Community,Testing,Pilot,Interim,Evaluation.pdf). Nog ernstiger is dat 33% hiervan die hoge hoeveelheden virusdeeltjes hebben ook niet opgemerkt worden. Helemaal dramatisch was een studie van [massa-sneltesting van studenten](https://doi.org/10.1101/2020/12/01/20237784) voor ze naar huis gingen met Kerstmis: blijkt dat van de mensen die positief testten met een PCR test, de sneltest er maar 3% kon uithalen. 
+
+Het probleem is dat onze overheid uitgaat van een 77% sensitiviteit: je haalt 77% van de positieve mensen eruit... Helaas is dit een claim van fabrikanten die enkel geldt bij de onrealistische situatie van mensen die symptomen hebben, tests uitgevoerd door laboratorium specialisten en ervaren klinisch personeel. 

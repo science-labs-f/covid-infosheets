@@ -1,0 +1,126 @@
+---
+title: "Kunnen we COVID-19 doen verdwijnen? Een blik vanuit Zweden."
+author: "FF"
+date: "24/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+
+source("shared/general.R")
+```
+
+
+```{r echo=F, cache=F}
+d <- read.csv("https://epistat.sciensano.be/Data/COVID19BE_CASES_AGESEX.csv")
+
+##agregate on data
+agg_d <- aggregate(x = d$CASES, FUN = sum,
+                   by = list(groupdate = d$DATE, group.age = d$AGEGROUP))
+names(agg_d)[names(agg_d)=="x"] <- "cases"
+
+# create new table with media ages per age group 
+group.age <- c("0-9",	"10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79","80-89","90+")
+median.age <- c(4.5, 14.5, 24.5, 34.5, 44.5, 54.5, 64.5, 74.5, 84.5, 90)
+d2 <- data.frame(group.age, median.age)
+
+# merge two tables
+
+d_j <- left_join(agg_d, d2, by=c("group.age"))
+
+#sum median_ages
+
+for (row in 1:nrow(d_j)) {
+  d_j["age.sum"] = d_j$cases * d_j$median.age
+}
+
+d <- d_j
+agg_d_c <- aggregate(x= d$cases, FUN = sum,
+                    by = list(groupdate = d$groupdate))
+names(agg_d_c)[names(agg_d_c)=="x"] <- "sum.cases"
+agg_d_a <- aggregate(x= d$age.sum, FUN = sum,
+                    by = list(groupdate = d$groupdate))
+names(agg_d_a)[names(agg_d_a)=="x"] <- "sum.ages"
+d <- left_join(agg_d_a, agg_d_c, by=c("groupdate"))
+
+# calculate mean ages
+
+for (row in 1:nrow(d)) {
+  d['mean.age'] = d$sum.ages/d$sum.cases
+  betterDate <- as.Date(d$groupdate)
+  d['betterDate'] = betterDate
+  d['date'] = format(betterDate, "%d/%m" )
+}
+
+# to be able to do regression for dates, express dates as days since startdate
+startdate = min(d$betterDate)
+
+for (row in 1:nrow(d)){
+  d['days_diff'] = (d$betterDate - startdate)
+}
+
+
+```
+
+Ik hoorde op UnHerd [dit interessant interview](https://unherd.com/2020/07/swedens-anders-tegnell-judge-me-in-a-year/?fbclid=IwAR1sDEGYAQqLEbP4DCxOijoyJgGjStJSgHL0PxpM1JiU0LHh706bGcSDUJE) met Anders Tegnell, de Zweedse architect van een unieke aanpak van de corona-pandemie. Ik haal er de dingen uit die ik belangrijk vind. Bijna alles ;-).
+
+# Lockdown of niet? 
+
+Zweden heeft een bevolking die behoorlijk verschilt van de buurlanden. Waardoor ze meer lijkt op de Nederlandse, Belgische of de Britse bevolking. Gelijkaardige grote hoeveelheden migranten, gelijkaardige grote concentraties van bewoning in steden (urbanisatiegraad), en gelijkaardige aantallen van oudere mensen. Deze vergelijkbaarheid vormde de basis voor de [eerste balans over de risico's en baten van deze coronacrisis in België](https://mfr.de-1.osf.io/render?url=https://osf.io/pw8qu/?direct%26mode=render%26action=download%26mode=render). 
+
+Het is niet makkelijk te bepalen of een lockdown een verschil uitmaakt. Zweden had geen lockdown, maar wel veel vrijwillige medewerking van de bevolking. Zo waren er effecten die ook in de lockdown kunnen verwacht worden. De Zweden deden bijvoorbeeld net zoals de buurlanden veel minder verplaatsingen. Vrijwillige maatregelen kunnen even effectief zijn dan een opgelegde lockdown. Kijk bijvoorbeeld naar [het snelle dalen van cases](https://experience.arcgis.com/experience/09f821667ce64bf7be6f9f87457ed9aa) in Zweden. Dat is een succes.
+
+Een lockdown heeft een groot effect op andere belangrijke zaken. Denk aan de gezondheid van kinderen door het sluiten van scholen. Of het verliezen van jobs bij volwassenen. Dus moeten we ook naar de negatieve effecten van een lockdown kijken. En dat gebeurt vandaag nauwelijks.
+
+# Jongere cases
+
+Tygnell merkt op dat de meeste doden _verband houden met_ COVID-19, maar de ziekte is niet de oorzaak. Het duidelijkste zie je dat bij hoogbejaarde mensen in de woonzorg die al heel wat andere ziekten hebben. Ze hebben dus -los van COVID-19 besmetting- zowiezo een hoge kans op sterven. 
+
+Tegnell ziet dat de leeftijd van de gekende besmettingen ('cases') daalt. In het begin van de pandemie waren het vooral oude mensen die besmet waren. Nu zijn de besmettingen vooral bij mensen van een jonge-middelbare leeftijd. Omdat deze mensen jonger zijn en beter tegen het coronavirus kunnen, zijn hospitalisaties zeldzaam en overlijdens zeer zeldzaam. Dat is goed nieuws voor de bescherming van de volksgezondheid. En de zorgcapaciteit blijft dan intact. 
+
+Ik vraag me dus af of we die verandering van verspreiding door **dalende leeftijd bij besmettingen ook in België** zien. Na verwerken van de [cases dataset](https://epistat.wiv-isp.be/covid/) van Sciensano, krijg ik de volgende grafiek:
+
+```{r echo=F}
+barplot(d$mean.age, names.arg = d$date, main="De gemiddelde leeftijd van COVID-19 cases 
+        gedurende de pandemie in België", ylab= "Gemiddelde leeftijd cases", ylim=c(0, 80)  , cex.names = 0.6)
+#abline(h = 60 , col = "forestgreen")
+#abline(h = 40, col = "darkorange1")
+#lines(predict(lm(d$mean.age ~d$days_diff)), col="green")
+abline(lm(d$mean.age ~d$days_diff), col="blue", lty=3, lwd=2)
+```
+
+De trend is duidelijk. Je ziet dat de gemiddelde leeftijd van cases vandaag (30 jaar) 30 jaar lager is dan in de eerste golf van de pandemie (60 jaar). De cases zijn duidelijk bij steeds jongere mensen. Dus ook in België zal waarschijnlijk de trend van het verder verbeteren van de zorgcapaciteit verderzetten. En zullen er minder COVID-19 gerelateerde ziekenhuisopnames of sterftes zijn. Goed nieuws. 
+
+# Strategie
+
+De ziekte zal niet weggeaan. Ze blijft onder ons voor een lange tijd. We kunnen COVID-19 wel tot op zekere hoogte beperken met betere behandelingen en vaccins. Maar wanneer die laatsten zullen verschijnen, weten we niet. Tegnell zegt dat we dit virus niet kunnen onderdrukken en doen verdwijnen. Toch niet met de middelen die we nu hebben. En verspreiding tegengaan in een globaal verbonden wereld zaols vandaag is helemaal utopisch. Het kan zijn dat we deze ziekte op lange termijn kunnen doen verdwijnen met een zeer goed vaccin, maar of dat er ooit komt, daar is Tegnell niet zo zeker van. 
+
+> De fundamentele vraag is "Willen we de publieke gezondheid als geheel beschermen?" of "Willen we COVID-19 onderdrukken?"
+
+Gelijkaardige verspreidende ziektes - denk aan influenza of andere virussen van de ademhalingswegen- zijn ook verre van verdwenen. Dat ondanks een griepvaccin. We zullen dus met het virus moeten leven door betere behandelingen en betere bescherming van ouderenzorgbedrijven, en misschien komt er een werkend vaccin voor de kwetsbare groepen.
+
+# Foute voorspellende modellen
+
+In 1976 stelde dr Box de geroemde uitspraak onder statistici ["Alle voorspellende modellen zijn fout"](http://www-sop.inria.fr/members/Ian.Jermyn/philosophy/writings/Boxonmaths.pdf). "Belangrijk is dat we onderzoeken wat fout is." Zo was het ook met de meeste COVID-19 modellen totnogtoe. Ze waren een fiasco ([Ioannidis, 2020](https://www.sciencedirect.com/science/article/pii/S0169207020301199#fig1)). Vooral de voorspellingen rond het aantal doden bleken de slechtste te zijn. Dodenaantallen houden niet zo'n nauw verband met _cases_. Wel zaken zoals: wie wordt getroffen? Hoe goed kan je ouderen beschermen in de zorginstellingen? Wat is de kwaliteit en capaciteit van het zorgsysteem? Ze bepalen veel meer de sterfte dan louter kijken naar het verspreiden van de ziekte. 
+
+Het lage aantal sterftes bemoeilijkt ook de voorspellingen. Een onzekere parameter hier is  de infection fatality rate (IFR): het aandeel doden dat valt na een infectie. Tegnell schat die tussen `r IFR_low`% en `r IFR_high`%. Voor mensen jonger dan 70 schat Ioannidis een IFR van `r IFR_70_younger `%. Dat zijn cijfers vergelijkbaar met het griepvirus [ref](https://doi.org/10.1101/2020.05.13.20101253).
+
+# Veerkracht bij uitbraken
+
+De immuniteit wordt onderschat en is dus in werkelijkheid hoger. Er is het verhaal dat er nauwelijks antilichamen zijn na COVID-19. Nochtans zijn het aantal mensen dat twee keer ziek wordt van COVID-19 extreem zeldzaam. Ondanks zeer nauwkeurige opvolging in Zweden, vonden ze niet 1 geval. Het is dus duidelijk dat we na een COVID-19 infectie immuun zijn. Maar voor hoelang is niet duidelijk. 
+
+> Komende herfst zal een testcase worden: zullen de maatregelen in verschillende landen in staat zijn nieuwe uitbraken op te vangen?
+
+Alleszins ziet Zweden door de immuniteit een snelle daling van het aantal cases. Er blijven wel delen van de bevolking met een lage immuniteit, dus verwacht Tegnell daar nog 'uitbraken' van besmettingen. Maar door de bestaande immuniteit zullen die uitbraken makkelijk op te lossen zijn. Dat ziet hij ook duidelijk bij uitbraken van de mazelen. Komende herfst zal een testcase worden om te zien of de maatregelen in verschillende landen in staat zijn nieuwe uitbraken op te vangen. 
+
+# Geen mondmaskers
+
+Hoe komt het dat je in Stockholm geen mensen met een mondmasker ziet? Tegnell: De wetenschappelijke basis voor het gebruik van mondmaskers onder de algemene bevolking is zeer zwak. Ondanks dat sommige landen ze verplichten, ziet hij geen nieuw bewijs verschijnen dat ze daar werken. Alles wijst erop dat social distancing een veel betere manier is om de verspreiding van deze ziekte te controleren. Hij deelt de bezorgdheid dat mondmaskers een vals gevoel van veiligheid kunnen geven. Of zelfs dat mensen rondlopen terwijl ze ziek zijn. Dat zou enkel de verspreiding verhogen. Als er bewijs komt dat het mondmasker zinvol is voor bepaalde locaties, of voor sommige groepen van mensen, dan kan het overwogen worden. Maar zeker nu er extreem weinig mensen gehospitaliseerd worden en het aantal besmettingen naar beneden vallen, zijn mondmaskers voor de Zweden niet aan de orde. 
+
+Tot zover Anders Tegnell.
+
+# Mogelijke conclusie voor België
+
+Aangezien vandaag vooral jongere Belgen besmet zijn, hebben we een eerste kans de immuniteit aan te scherpen op een relatief veilige manier. Met als uiteindelijk doel: een bevolking die sterk genoeg is om terug het normaal leven te hervatten. Daarvoor hebben we gezonde social distancing nodig zonder verdere _virus-verdrukkende_ maatregelen (denk aan mondmaskers, thuis blijven, enz...) zodat de snelheid van verspreiden beperkt blijft. En uiteraard het beschermen van oude mensen en kwetsbaren (bv. met een mondkapje als ze dat wensen). Dat is de kans die nu op tafel ligt. Helaas blijft België kiezen voor de verdrukking van het virus. En kijkt de overheid nauwelijks naar de negatieve effecten van de coronamaatregelen.

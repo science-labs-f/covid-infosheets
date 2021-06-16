@@ -1,0 +1,28 @@
+---
+title: "Infobladen"
+---
+
+> De toekomst verplettert alle voorspellingen
+
+[Statistieken van de geestelijke gezondheid sinds coronacrisis](geestelijke-gezondheid.html) (*update 16/6/2021*)
+
+[Wat weten we over zelfmoordpogingen tijdens deze coronacrisis?](post-2-zelfmoordpogingen.html) (*update 16/6/2021*)
+
+[Zijn snelle zelftests bij een publiek evenement een goede maatregel om de corona-epidemie te controleren?](IC-opname-vermijden-zelftests.html)
+
+[De contouren van groepsimmuniteit?](herd-immunity.html) (*update 18/2/2020*)
+
+[Verspreidt het virus zich van kinderen & jongeren naar de meest kwetsbaren?](jong-oud-pos-tests.html) (*update 27/1/2021*)
+
+[Transmissie bij geïnfecteerde mensen zonder ziekteklachten (Asymptomatische transmissie)](asymptomatische-transmissie-sars-cov-2.html) (*update 31/12/2020*)
+
+
+[Kunnen we COVID-19 doen verdwijnen? Een blik vanuit Zweden.](post-6-covid-verdwijnen.html) (*update 24/9/2020*)
+
+[Psychologie van de grafiek](post-8-psychologie-statistiek.html)
+
+[Wat zijn de prioriteiten bij het beschermen van de volksgezondheid?](post-5-prioriteiten-volksgezondheid.html) 
+
+[Op bewijs of op angst gebaseerde maatregelen?](post-4-angst-bewijs-maatregelen.html)
+
+[Waar is het killervirus?](post-1-killervirus.html)

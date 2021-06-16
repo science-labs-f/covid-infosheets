@@ -1,0 +1,154 @@
+---
+title: "Zijn snelle zelftests bij een publiek evenement een goede maatregel om de corona-epidemie te controleren?"
+author: "FF"
+date: "15/4/2021"
+output: html_document
+bibliography: bibliographies/selftest-ic.json
+csl: bibliographies/apa-sixth-edition.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Te verwerken
+# 
+# doel zo weinig mogelijk nieuw het evenement potentieel nieuwe besmettingen, want dat zou kunnen leiden tot 
+# wat zijn de IN en UIT's (opbrengts van vermeden UIts)
+# scenario: niets doen
+# scenario: zelftesten startegie
+# scenario: lifestyle veranderingsprogramma voor de gemiddelde IC patiënt
+# 
+# resultaat zeer gunstig of super-spreading event? Alles kan. Maar dat heeft iets te gemakkelijks. En kan al snel irrationeel worden. Het gaat erom dat je op een bepaald moment een inschatting maakt met de best beschikbare wetenschap.
+# 
+# Er is namelijk veel onzekerheid rond transmissie bij mensen zonder klachten. [@byambasurenEstimatingExtentAsymptomatic2020] RR 44%? Aan Rt= 1 -> Rt 0.5, infectie overbregeng vragat incubatie van aannemende minstens 24uur, du sbij dagevenenement onwaarschijnlijk dat er doorggegeven wordt. Dus 4 indexcases 
+```
+
+
+
+Het hoofddoel van de coronamaatregelen is het beperken van het aantal ziekenhuisopnames op intensieve zorgen. Zo kunnen ziekenhuizen ook de zorgen voor andere patiënten blijven aanbieden. 
+
+Deze zomer zullen mensen allerlei publieke activiteiten willen bezoeken, bv. een muziekfestival. Een proefproject te Hasselt [@VlaamseRegeringPlant] wil nagaan hoe evenementen op een veilige manier kunnen georganiseerd worden. De strategie bestaat erin om met snelle zelftests corona-besmettingen te detecteren. En positieve sneltests dan te dubbelchecken met een PCR test zodat men beter weet of er wel degelijk stukken van het virus in het lichaam zijn. 
+
+## Vraag
+
+Zijn zelftests voor publieke activiteiten een goede of slechte maatregel om snel na te gaan wie besmettelijk is? Wat is de uiteindelijke maatschappelijke kost om zo één covid-ziekenhuisopname bij intensieve zorgen (IC) te vermijden? 
+
+## Aanpak 
+
+Ik ga ervan uit dat mensen met griepachtige klachten thuis zullen blijven. Enkel gezonde mensen zonder klachten doen dan een zelftest voordat ze naar het event gaan. [Assumptie]
+
+Tijdens het schrijven van dit artikel (15 April 2021, 3 de golf) hebben we een dagelijkse viruscirculatie bij 1 op de 3,330 Belgen [@BelgiumCOVID19Dashboard]. Tijdens de zomer verwacht ik een lagere dagelijkse viruscirculatie van 1 op de 10,000 (0.01%) [Assumptie]
+
+Uit een Cochrane Review [@Covid19LateralFlow] blijkt dat de zelftest bij mensen zonder klachten een sensitiviteit van 58% heeft en een specificiteit van 98.9%. Voor de PCR test zou de werkelijke testprestatie liggen rond 75% sensitiviteit en 95% specificiteit. [@watsonInterpretingCovid19Test2020].
+
+Ter illustratie simuleer ik een publieke activiteit zoals een groot zomerfestival met 40,000 bezoekers. 
+
+Om de kost te berekenen ga ik uit van:
+
++ Kost zelftestkit 8€
++ Kost PCR test 49€
++ Jaarlijks salaris van de gemiddelde geteste persoon: 30,000€
+
+Om het aantal (te vermijden) besmettingen te berekenen dat nodig is om één IC covid-opname (IC hosp) te vermijden (+1-IC):
+
++ dagelijkse cases = gemiddelde van de zomermaanden juli/augustus 2020
++ 18% van de covid hospitalisaties zijn voor IC 
++ IC hosp = alle hospitalisaties * 0.18
++ +1-IC (aantal besmettingen te voorkomen voor 1 IC hosp) = 1 / (IC hosp / cases)
++ correctie, uitgaande van 70% hogere groepsimmuniteit tov zomer 2020, door genezen infecties en vaccinatie
+
+Prestatie van teststrategie:
+
++ aandeel echte positieven na PCR confirmatie t.o.v. het aantal verwachte positieven
+
+-> hiervoor gebruik ik het rekenblad van de FDA [@FDACalculatorPositive]
+
+Kost om 1 persoon met virusdeeltjes te detecteren (CD1+):
+
++ totale kost = zelftests totaal + PCR confirmatie totaal + economische kost onnodige 10 dagen quarantaine (door vals positieven)
++ CD1+ = totale kost / gedetecteerde echt positieven 
+
+Kost ter preventie van 1 IC hosp (CP1-IC):
+
++ CP1-IC = +1-IC * CD1+ 
+
+Verder assumpties: 
+
++ per positieve test zal nog één ander nabij contact dat werkt (bv. inwonende ouders, partner,...) 10 dagen in quarantaine gaan. [Assumptie]
+
+
+## Resultaten  
+
+_Analyse kan je onderaan downloaden_
+
+### Prestatie teststrategie
+
+Als tijdens de zomer van 2021 40,000 mensen een zelftest doen, en de positieve tests worden bevestigd door een PCR test, dan:
+
++ zal de sneltest 442 positieve resultaten geven. Hiervan zullen 2 echt positief zijn, 440 zullen vals positief zijn.
++ zal de sneltest 39,558 negatieve resultaten geven. Bijna alle mensen (39,556) zullen ook echt negatief zijn. 
++ zal de bevestigende PCR test 24 positieve resultaten geven. Daarvan zullen 2 echt positief zijn, 22 zullen vals positief zijn. 
+
+De teststrategie zal in staat zijn 2 (afgerond) (43%) van de werkelijke (4) besmettingen op te pikken. 
+
+### Kost om 1 besmetting te detecteren
+
+In het scenario van 40,000 tests, zal er in totaal 377,823€ gaan naar:
+
++ zelftests 320,000€ 
++ PCR bevestigende tests 21,672€
++ salariskost van onnodige quarantaines 31,162€
+
+De kost per gedetecteerde besmetting zal 219,050€ zijn.  
+
+### Kosten ter preventie van IC covid-opname
+
+Rekening houdend met een toegenomen immuniteit t.o.v. zomer 2020, kunnen 159 gedetecteerde besmettingen 1 covid-IC opname vermijden. De kost om met de zelftest-strategie 1 IC opname te vermijden is dus 34,836,463€. Ook zullen 4,057 mensen onnodig 10 dagen in quarantaine gaan, wat neerkomt op een gemiste salariskost van 3,334,192€.
+
+## Discussie
+
+De zelftest-strategie presteert zwak. Slechts 43% van de echt besmette mensen kunnen gedetecteerd worden. De dubbelcheck met de PCR test doet het aantal vals positieven (onnodige quarantaines) met 95% dalen. 
+
+Tijdens een periode met weinig coronavirus, zal enkel het gebruik van een sneltest leiden tot vrijwel allemaal vals positieve resultaten (95% van de positieve tests). Een negatief resultaat zal wél betrouwbaar zijn en in bijna alle gevallen dus echt negatief zijn.  
+
+Om één besmetting te detecteren kost dit het enorme bedrag van 219,050€. De kost om met de zelftest-strategie 1 IC covid-opname te vermijden, is helemaal buiten proportie: 34,836,463€. Ook de bijkomende stress, zoals 4,057 mensen die onnodig in quarantaine zullen gaan. 
+
+### Sterke en zwakke punten
+
+Zwakke punten:
+
++ dagelijkse cases, hospitaalopnames en de IC opnames voorspellen is onzeker op basis van zomer 2020 cijfers. Ik deed wel een correctie wegens de verwachte sterkere groepsimmuniteit in zomer 2021.
++ het ontbreken van de prijs van contact-tracing per positieve test
++ het ontbreken van de prijs van logistiek per test
++ het ontbreken van de 'kost' op psychologisch vlak door o.a. stress 
+
+Sterk: 
+
++ eerste analyse die op basis van de beste beschikbare gegevens een vrij volledig beeld schetst van de prestatie en de maatschappelijke kosten van een teststrategie op publieke zomerevents.
+
+### Vergelijking met ander onderzoek
+
+In tegenstelling tot de 5.3% positieve sneltests die ook werkelijk positief zouden zijn na PCR test, vindt de Britse overheid [@Covid82Positive2021] dat 82% ook door PCR bevestigd worden als zijnde positief. Dit grote verschil kan deels verklaard worden omdat:
+
++ het nog winter is en er dus meer virus circuleert. 
++ slechts de helft van de stalen werden dubbelgecheckd 
++ mensen mét en zonder ziekteklachten werden getest 
++ een overheidstudie zonder onafhankelijke beoordeling van onderzoekers onbetrouwbaar is o.a. wegens politieke inmenging en grote belangenconflicten
+
+Dit UK artikel [@daviesVastMajorityPositive2021] meldt dat het detecteren van één besmetting met sneltests bij schoolkinderen 138,000€ kost. De grootteorde komt ruwweg overeen met mijn schatting.
+
+## Impact op het beleid
+
+Massale testprogramma's mogen enkel uitgerold worden als er voldoende bewijs is dat ze helpen in het verminderen van IC covidopnames. In periodes dat er weinig virus circuleert is dit extra belangrijk. Het is zeer twijfelachtig of je op basis van bewijsmateriaal rond het uitpikken van besmettingen met sneltests ook daadwerkelijk covid-opname vermijdt op intensive care.
+
+## Onzekerheden en toekomstig onderzoek
+
+Om beter te weten hoe betrouwbaar een positief resultaat van een sneltest is, dienen we te weten hoeveel sneltests na PCR bevestiging ook positief blijven. Dit onderzoek kan best ook in periodes met lage viruscirculatie uitgevoerd te worden. En bij mensen zonder klachten. Belangrijk is daarbij de besmettingsgraad (of virulentie) na een positieve test word bekeken via de zogenaamde cycle treshold waarde (CT-waarde).
+
+## Data en analyse
+
+[Rekenblad](analyses/mass-testing-prevent-IC.ods)
+
+## Referenties

@@ -1,0 +1,62 @@
+---
+title: "Wat weten we over zelfmoordpogingen tijdens deze coronacrisis?"
+author: "FF"
+date: "16/6/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE, echo=F}
+knitr::opts_chunk$set(echo = FALSE)
+source(file = "shared/general.R")
+source(file = "shared/suicide.R")
+source(file = "shared/covid-death.R")
+
+pot_HLY_Belgium = Pot_HLY * population_be
+
+```
+
+## Belangrijkste besluiten
+
+* Sinds de corona-maatregelen zijn er voor de periode april 2020 tot maart 2021 naar schatting `r suicatt_ratio` keer meer zelfmoordpogingen. In die 12 maanden eindigden mogelijks `r format(pred_suicatt_succes, scientific=F, big.mark=",")` fataal.
+* In [Juni 2020](https://www.sciensano.be/en/biblio/derde-covid-19-gezondheidsenquete-eerste-resultaten) en [September 2020](http://covid-19.sciensano.be/sites/default/files/Covid19/Report4_COVID_19HIS_NL_1.pdf) waren er al aanwijzingen van abnormaal veel zelfmoordpogingen.
+* Onzekerheden: 
+  + hoeveel zelfmoordpogingen bij kinderen en jongeren (jonger dan 18 jaar)?
+  + leiden zelfmoordpogingen tijdens de coronacrisis in dezelfde mate tot zelfmoord?
+  + hoeveel zelfmoorden hebben we tijdens de coronacrisis? De cijfers hier zijn een ruwe schatting
+* Onderzoek kan deze onzekerheden wegwerken. Zeker tijdens deze crisis zijn regelmatige recente cijfers over zelfmoorden, depressie, en angst nodig. Zo hebben we een beter totaalbeeld van de impact die de coronacrisis heeft op de bevolking.
+
+## Schokkende cijfers, vooral voor jonge mensen
+
+Toen ik [ons onderzoek](https://mfr.de-1.osf.io/render?url=https://osf.io/pw8qu/?direct%26mode=render%26action=download%26mode=render) een update gaf met de gegevens van de [3de Sciensano covid enquete](https://www.sciensano.be/en/biblio/derde-covid-19-gezondheidsenquete-eerste-resultaten), las ik op pagina 30 "ZELFMOORDGEDACHTEN EN ZELFMOORDPOGINGEN" schokkende cijfers. Ze waren mij niet bekend. 
+
+In Juni en September 2020 rapporteerde Sciensano dat sinds de coronamaatregelen abnormaal veel mensen een poging deden om uit het leven te stappen. Bij de jongvolwassenen (tussen de 18 en 29 jaar) zijn de cijfers het hoogst. `r format(suicatt_18_29, scientific=F, big.mark=",")  ` (`r prop_suicatt_18_29` %) van hen deed een poging in de afgelopen 12 maand. Voor de jonge mensen tussen de 0 en 18 jaar heeft het rapport geen cijfers. 
+
+## Mogelijks `r suicatt_ratio` keer meer zelfmoordpogingen
+
+In normale tijden zijn er op `r months_surveyed` maand `r format(suicatt_2018_corr, scientific=F, big.mark=",")  ` (`r round(suicatt_2018_corr_rel, 2)`%) mensen die een poging ondernemen ([Geestelijke Gezondheid - Gezondheidsenquete Sciensano 2018](https://his.wiv-isp.be/nl/Gedeelde%20%20documenten/MH_NL_2018.pdf)). Dat zijn vooral mensen tussen de 45 en 54 jaar oud. 
+
+Sinds de coronamaatregelen zouden er in totaal `r format(suicatt, scientific=F, big.mark=",")  ` zelfmoordpogingen zijn.  Dat is zomaar even `r suicatt_ratio` keer meer dan voor de coronacrisis. En ze gebeurden in `r suicatt_18_29_ratio` % van de gevallen bij jongvolwassenen. Ondanks dat we de onderzoeken niet perfect kunnen vergelijken, is de stijging aannemelijk. Vooral omdat ook de angst en depressie [sterk toenam](geestelijke-gezondheid.html) tijdens de crisis. 
+
+## Taboe
+
+Hoe kan het dat ik daarvan weinig hoor in de media? Even [aan Google vragen](https://www.google.com/search?q=belgië+zelfmoordpogingen+covid), want ik kijk of luister niet alle dagen naar het nieuws, grotendeels om mijn geest zuiver te houden van donkere boodschappen ;-) . Wat blijkt? Weinig nieuwsberichten over deze schokkende feiten. Er lijkt een taboe op zelfmoordpogingen tijdens deze coronacrisis. 
+
+Na contact met onderzoekers van [Vlaams Expertisecentrum Suïcidepreventie](https://www.vlesp.be) werd me duidelijk dat ze bijzonder voorzichtig zijn in het melden van cijfers. Omdat het gevaar bestaat dat ze niet goed geïnterpreteerd worden of te dramatisch worden voorgesteld. Daarom hebben ze [mediarichtlijnen](https://www.zelfmoord1813.be/mediarichtlijnen) die vervat zijn in de code van de Raad voor de Journalistiek. Ik begrijp hun bezorgdheid, toch is het mijn hoop iedereen achter de cijfers ook het lijden van (soms jonge) mensen voldoende kan horen zodat we hen goed kunnen helpen.
+
+## Mogelijks `r format(pred_suicatt_succes, scientific=F, big.mark=",")` eindigden in zelfmoord
+
+Hoeveel mensen overlijden - in normale tijden - na een zelfmoordpoging? Op basis van deze [gegevens](https://statbel.fgov.be/nl/themas/bevolking/sterfte-en-levensverwachting/doodsoorzaken) uit 2017: minstens `r format(suic_2017, scientific=F, big.mark=",")`. Dus van alle zelfmoordpogingen eindigen helaas `r format(suicatt_with_death_ratio, scientific=F)`% in zelfmoord. 
+
+Stel dat deze verhouding ook geldt tijdens de coronacrisis. Dat zou erop kunnen wijzen dat we tussen de start van de coronamaatregelen (half maart 2020) en de datum van de recentste Sciensano enquete (begin April 2021)  `r format( extra_suic , scientific=F, big.mark=",")` extra zelfmoorden verwachten. Dus bovenop het 'normale' jaarlijkse aantal.  Het werkelijk aantal zullen we volgens [StatBel](https://statbel.fgov.be/nl/themas/bevolking/sterfte-en-levensverwachting/doodsoorzaken#documents) pas weten in 2022. 
+
+Er zijn nochtans [tegenstrijdige berichten](https://businessam.be/opvallend-zelfmoordcijers-daalden-tijdens-pandemie/) in media dat het aantal zelfmoorden niet zou toegenomen zijn. Die analyses zijn voor de drie maanden na de eerste lockdown. Mijn vermoeden is dat het dan nog te vroeg was om de effecten van langdurige uitzichtloosheid op te meten. 
+
+## En de Covid-19 impact op volksgezondheid ?
+
+Met de nodige voorzichtigheid rond deze _geschatte_ aantallen zelfmoorden, kan je ook de impact meten op de volksgezondheid bij de actieve bevolking. De Belgische volksgezondheid heeft een potentieel van ruwweg `r format(pot_HLY_Belgium, scientific=F, big.mark=",") ` gezonde levenjaren. In België ligt de grens op `r Pot_HLY` jaar. Tot op die leeftijd , kan je verwachten zonder ernstige gezondheidsproblemen te leven. Het is dus indirect ook een aanwijzing voor het aantal jaren dat een bevolking economisch actief kan zijn. 
+
+Als de schatting van het aantal mensen dat uit het leven stapten door de coronamaatregelen klopt, dan verliezen we als Belgische volksgezondheid tussen de `r format(DALY_suic_impact_low, scientific=F, big.mark=",")` en `r format(DALY_suic_impact_high, scientific=F, big.mark=",")` levensjaren. Voor de actieve bevolking leidde een Covid-19 infectie tot `r format(covid_HLYL, scientific=F, big.mark=",")` verloren gezonde levensjaren (zie ook [Feys, Brokken, De Peuter](https://psyarxiv.com/xczb3/)). Dus tov covid-19, zou alleen al zelfmoord meer schade aan de volksgezondheid van de actieve bevolking gegeven hebben. Als je ook depressie, angst en familiaal geweld meerekent, dan is [de impact nog vele malen hoger](geestelijke-gezondheid.html). 
+
+Het is mijn hoop dat onze minister van volksgezondheid Frank Vandenbroecke het psychische welzijn van onze bevolking verbetert. Zodat de jaarlijkse wens van een "Gelukkig & gezond nieuw jaar" voor iedereen uitkomt.
+
+Wie zelfmoordgedachten heeft of iemand kent, kan [hier hulp vinden](https://www.zelfmoord1813.be/zelfmoordpreventie-coronatijden)

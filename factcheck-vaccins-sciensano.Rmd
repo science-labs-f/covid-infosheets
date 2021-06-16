@@ -1,0 +1,30 @@
+---
+title: "Facktcheck Vaccins"
+author: "FF"
+date: "6/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+["Vaccins werken, blijkt uit Sciensano-studie"](https://www.vrt.be/vrtnws/nl/2021/06/11/covid-19-infecties-na-vaccinatie-komen-beperkt-voor-en-zijn-asym/). Laat ik de studie beoordelen. Op de Sciensano website vind ik bij het [persbericht](https://www.sciensano.be/nl/pershoek/covid-19-infecties-na-vaccinatie-komen-beperkt-voor-en-zijn-overwegend-asymptomatisch) geen verwijzing naar de studie. Waarom? Vreemd. Dan maar verder zoeken. Email naar sciensano: automatisch antwoord: "Het kan uitzonderlijk lang duren vooraleer we uw vraga beantwoorden"
+
+
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

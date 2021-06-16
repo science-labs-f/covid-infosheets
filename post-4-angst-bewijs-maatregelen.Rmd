@@ -1,0 +1,37 @@
+---
+title: "Op bewijs of op angst gebaseerde maatregelen?"
+author: "FF"
+date: "7/22/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Overheden nemen de ene na de andere maatregel. Van weinig maatregelen weten we of ze werken. We gaan ervan uit dat ze juist zijn omdat experts het zeggen. Er is ook vaak druk vanuit de bevolking , opgejaagd door massamedia om iets te doen. Maar neem nu de experts, ze zijn dan ook maar mensen. Ze hebben hun redenen om te overdrijven in hun adviezen. [Expert failure](https://www.econlib.org/pandemics-and-the-problem-of-expert-failure/) wordt zo een realiteit. Niets doen of bescheiden handelen, is al snel geen optie.
+
+Sommige maatregelen beperken menselijke vrijheden. Ze gaan dus ver. Ik denk aan de overheid die zonder toestemming over de schouder van haar burgers meekijkt naar locatiegegevens van smartphones. Of het verplichten van mondmaskers terwijl Oxford  epidemiologen zeggen dat er [geen bewijs of dit enig verschil maakt](https://unherd.com/thepost/oxford-epidemiologists-suppression-strategy-is-not-viable/), net zoals [deze geleerden](https://www.nejm.org/doi/full/10.1056/NEJMp2006372) het vefijnd formuleren: 
+
+> De kans om covid-19 op te doen door een voorbijgaande interactie in de openbare ruimte is minimaal. In veel gevallen is het verlangen naar verplichte mondmaskers een reactie op angst voor de pandemie.
+
+Ik vind dat het ontnemen van fundamentele mensenrechten enkel kan als 1) het tijdelijk is 2 ) voorafgaande duidelijke afspraken over het lossen van inbreuken op mensenrechten 3) er een duidelijk gevaar is 4) als er een degelijk wetenschappelijk bewijs is dat het de volksgezondheid in z'n geheel verbetert. 
+
+# Wat is degelijk wetenschappelijk bewijs?
+
+Expertenrapporten zoals van de [GEES werkgroep](https://www.premier.be/nl/de-werkgroep-voor-de-ontwikkeling-van-een-exit-strategy-samengesteld) in Belgiê hebben zogoed als geen wetenschappelijke bewijskracht. Als je wil weten of iets werkt, dan is minimaal een gerandomiseerd onderzoek nodig. En beter is een meta-analyse. 
+
+Zo onderzocht Noorwegen bijvoorbeeld [of het openen van fitness centra veilig](https://www.medrxiv.org/content/10.1101/2020.06.24.20138768v2) is. Toen bleek dat fitnessen evenveel besmettingen gaf als thuisblijven, opende Noorwegen z'n fitnesscentra. Simpel en doeltreffend. De [Denen onderzoeken](https://www.clinicaltrials.gov/ct2/show/NCT04337541) of mondmaskers het aantal COVID-19 infecties doet dalen. Verfrissend, toch?
+
+# Hoeveel degelijk onderzoek gebeurt er naar effectieve maatregelen?
+
+Nu ben ik benieuwd hoeveel gerandomiseerd onderzoek gebeurt naar coronamaatregelen. Daarvoor duik ik in [PubMed](https://pubmed.ncbi.nlm.nih.gov/). Hier vind je _peer reviewed_ onderzoek, zodat de studieresultaten geloofwaardiger zijn.  
+
+[PubMed zoeken](https://pubmed.ncbi.nlm.nih.gov/?term=%28covid%29+AND+%28%22randomized+controlled+trial%22%5BPublication+Type%5D%29&sort=date&size=100&ac=no) levert 26 resultaten op. Er is één [studie naar gedrag](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7362027/) met 399 Britten (72% vrouwen) die iets bijleert over maatregelen:
+
+* ondersteunende maatregelen zijn beter dan bestraffende maatregelen omdat die laatsten ingaan tegen basis democratische waarden zoals persoonlijke vrijheid
+* wat als anderen de normen overtreden? de Britse deelnemers vinden bestraffende maatregelen eerder gewenst zijn voor mensen in een ander land (Italië in deze studie) 
+* mensen met negatieve emoties (kwaadheid, veroordeling, walging) vonden vaker bestraffing nodig
+
+Er zullen vast betere bronnen zijn die meer resultaten geven van gerandomiseerd onderzoek. Misschien iets voor een latere update van dit infoblad.
+

@@ -1,0 +1,12 @@
+blockquote {
+  font-style: italic
+}
+
+p, ul {
+  font-size: 20px;
+  color: black
+}
+
+.footer {
+  font-size: 16px;
+}

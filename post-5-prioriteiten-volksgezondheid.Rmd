@@ -1,0 +1,107 @@
+---
+title: "Wat zijn de prioriteiten bij het beschermen van de volksgezondheid?"
+author: "FF"
+date: "7/24/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("~/Documents/wetenschap/covid-19/infosheets")
+```
+
+[Dit](https://www.healthybelgium.be/en/health-status/mortality-and-causes-of-death/premature-mortality-by-cause) is een goede pagina als je de coronadoden in perspectief wil brengen met de volksgezondheid. Wat veroorzaakt de grootste verliezen (en omgekeerd de mogelijk winsten) voor de volksgezondheid? Hoe past COVID-19 in dit rijtje? 
+
+De verliezen in volksgezondheid kan je uitdrukken als: wat zjn de levensjaren die we verliezen door een bepaalde oorzaak -> 'de potentieel verloren levensjaren' (PYLL). 
+
+Aan de slag!
+
+Eerst zoek ik bij [Sciensano](https://datastudio.google.com/embed/reporting/c14a5cfc-cab7-4812-848c-0369173148ab/page/QTSKB) de recente sterftecijfers voor COVID-19 bij mannen en vrouwen. 
+
+
+
+```{r echo=F}
+pop = 11431406
+
+# we analyse those aged < 75
+age_group <- c("0-24", "25-44", "45-64", "65-74")
+
+# covid deaths follow log curve, so assume 75 percentile is the median 
+age_group_median <- c(18, 39, 59, 69)
+deaths <- c(0, 17, 166, 342)
+
+f_d <- data.frame(age_group, age_group_median, deaths)
+
+deaths <- c(0, 20, 325, 633)
+m_d <- data.frame(age_group, age_group_median, deaths)
+
+# we analyse those aged < 75
+ref_age=75
+
+PYLL75.get <- function(d, ref_age, pop) {
+  PYLL75 = 0
+  for (row in 1:nrow(d)) {
+    deaths <- d[row, "deaths"]
+    age_group_median <- d[row, "age_group_median"]
+    # covid deaths follow log curve, so assume 75 percentile is the median 
+    PYLL75 <- PYLL75 + (ref_age - age_group_median) * deaths
+  }
+  PYLL75_rate = round(PYLL75 / pop * 100000,0)
+  return(PYLL75_rate)
+}
+
+f_PYLL75_rate <- PYLL75.get(f_d, ref_age, pop)
+m_PYLL75_rate <- PYLL75.get(m_d, ref_age, pop)
+```
+
+
+```{r echo=F}
+f_prem_death <- read.csv("data/YYL_V.csv")
+m_prem_death <- read.csv("data/YYL_M.csv")
+
+new_f_prem_death <- rbind(f_prem_death, data.frame(Category="COVID-19", PYLL.rate=f_PYLL75_rate))
+new_m_prem_death<- rbind(m_prem_death, data.frame(Category="COVID-19", PYLL.rate=m_PYLL75_rate)) 
+```
+Alles samen met de voortijdige sterfte krijgen we dit staafdiagramma:
+
+
+```{r echo=F}
+#order first
+ 
+new_f_prem_death <- new_f_prem_death[order(new_f_prem_death$PYLL.rate, decreasing = F),]
+new_m_prem_death <- new_m_prem_death[order(new_m_prem_death$PYLL.rate, decreasing = F),]
+
+plot.it <- function(d, title) {
+  par(mai=c(1,3,1,2))
+  y<-barplot(d$PYLL.rate, names.arg = d$Category, main = title , xlab= "PYLL per 100,000", col = "cornflowerblue", border = NA, cex.names=1, horiz=T, las=1)
+  x<-0.5*d$PYLL.rate
+  text(x,y, labels = as.character(d$PYLL.rate))
+}
+
+```
+
+## Mannen
+
+```{r echo=F}
+plot.it(new_m_prem_death, title="Top oorzaken van voortijdige sterfte (voor 75)
+          gerangschikt naar potentiëel verloren levensjaren (PYLLs) 
+          bij mannen, Belgie")
+```
+
+Bij mannen is het minderen van zelfmoord (depressie) dé uitdaging voor een betere volksgezondheid. Dan volgen longkanker (roken), en hartfalen (stress en sedentair leven). Ook ongevallen door verkeer & transport halen de volksgezondheid naar beneden. Interessant is dat COVID-19 pas op de 11 de plaats komt. Dat staat in schril contrast met de aandacht die het vandaag krijgt in het veranderen van onze levensgewoonten. Nochtans maakt zelfmoord 7 keer meer doden dan COVID-19.  
+
+## Vrouwen
+```{r echo=F}
+plot.it(new_f_prem_death, title="Top oorzaken van voortijdige sterfte (voor 75)
+          gerangschikt naar potentiëel verloren levensjaren (PYLLs) 
+          bij vrouwen, Belgie")
+```
+
+Bij de vrouwen zie ik dat zelfmoord een belangrijke uitdaging blijft voor een betere volksgezondheid. Echter borstkanker en longkanker staan nog iets hoger. Alweer opvallend, COVID-19 staat helemaal onderaan. Borstkanker maakt 6 keer meer slachtoffers dan COVID-19. 
+
+Er is een onzekerheid rond de COVID-19 cijfers. De epidemiegolf is voorbij in België. We weten echter niet wat de rest van 2020 zal brengen. 
+
+## Besluit
+
+Ondanks de coronacrisis, ligt de echte uitdaging voor het beschermen van de Belgische volksgezondheid bij het verminderen van zelfmoord, longkanker en borstkanker. 
+

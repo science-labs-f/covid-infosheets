@@ -1,0 +1,17 @@
+---
+title: "Hoeveel mensen moeten een mondmasker dragen om 1 infectie te vermijden?"
+author: "FF"
+date: "7/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+d <- read.csv("https://covid.ourworldindata.org/data/owid-covid-data.csv")
+```
+
+In dit rapport 
+https://www.fhi.no/contentassets/e6b5660fc35740c8bb2a32bfe0cc45d1/vedlegg/nasjonale-rapporter/2020.05.20-corona-report.pdf

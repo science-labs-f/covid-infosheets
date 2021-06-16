@@ -1,0 +1,173 @@
+---
+title: "'Cases', het drijfzand van deze coronacrisis"
+author: "FF"
+date: "9/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+```
+
+## Testvoorschriften bepalen vandaag de coronamaatregelen
+
+De aandacht lag tijdens de coronaepidemie op de overlijdens of de hospitalisaties die met corona te maken hebben. De ernst van covid-19 dus.Vandaag ligt de aandacht helemaal op 'cases'. De mensen die *zouden* besmettelijk zijn.
+
+De labo PCR test die de overheid gebruikt om besmettelijke mensen op te sporen heeft dus een grote invloed op de maatregelen die eruit volgen. Helaas heeft elke test, dus ook deze PCR test, last van vals positieven en vals negatieven. Hierdoor zullen onnodig mensen thuis blijven in afzondering. Of mensen die besmettelijk zijn toch de wereld instappen. 
+
+### Testbeleid veranderde grondig
+
+Wil nu het geval dat het testbeleid helemaal veranderde rond 20 juli 2020 (week 30). Massaal testen werd de norm. 
+
+```{r }
+library(ISOweek)
+
+d_t <- read.csv("https://epistat.sciensano.be/Data/COVID19BE_tests.csv")
+
+d_t['date'] = as.Date(d_t$DATE)
+d_t['week'] = ISOweek(d_t$date)
+
+## get from begin June 
+# d <- d_t[d_t$date >= "2020-06-01",]
+
+## get from anytime
+d<- d_t
+
+d_t_day <- aggregate(x= d$TESTS_ALL, FUN = sum,
+                    by = list(date = d$date))
+names(d_t_day)[names(d_t_day)=="x"] <- "sum.test"
+
+g_t = sum(d_t_day$sum.test)
+price = 45
+spend = g_t *price
+ 
+g_t
+
+d_t_p_day <- aggregate(x= d$TESTS_ALL_POS, FUN = sum,
+                    by = list(date = d$date))
+names(d_t_p_day)[names(d_t_p_day)=="x"] <- "sum.pos.test"
+
+g_t_p = sum(d_t_p_day$sum.pos.test)
+g_t_p
+
+d_t_wk <- aggregate(x= d_t$TESTS_ALL_POS, FUN = sum,
+                    by = list(week = d$week))
+names(d_t_wk)[names(d_t_wk)=="x"] <- "sum.test"
+
+barplot(d_t_wk$sum.test, names.arg = d_t_wk$week, cex.names = 0.6, border="red",density=0, main = "Aantal tests per week")
+
+medical_period_t <- 80000
+medical_ppv <- 98
+medical_npv <- 44.2
+
+mass_period_t <- 65000
+masstest_ppv <- 1.1
+mass_npv <- 100
+
+```
+
+Zoals je ziet springen we van een periode (week 21 tot week 30) van ruwweg ```r format(medical_period_t, scientific=F, big.mark=",") ``` tests per week naar een periode (week 31 tot op vandaag) van ```r format(medical_period_t+mass_period_t, scientific=F, big.mark=",") ``` tests per week. Dat is een stijging van 80%. Het testbeleid veranderde, want vanaf 20 juli beveelt de overheid aan zoveel mogelijk te testen: ook gezonde mensen, mensen die voor een andere reden dan covid naar het ziekenhuis gaan, enz.... 
+
+## Is een positieve test ook bewijs van besmettelijkheid?
+
+No wordt het ongewikkeld want de mate waarin de PCR test goed positieve gevallen kan opsporen hangt af van de kans op besmetting in de bevolking. Onderzoekers schatten dat er 1 besmettelijke persoon is per 500 tot 2000 mensen. Dat zorgt ervoor dat de kan dat een positieve test ook écht positief is (de zogenaamde Positive Predictive Value PPV) plots keldert van een normale ```r medical_ppv ```% naar ```r masstest_ppv ```%. Een tweede onafhankelijk test doen brengt weinig zoden aan de dijk, want dat land je op 13,6%. Die PCR test lijkt dus onbruikbaar bij een testbeleid van massatests onder gezonde bevolking. 
+
+## Wat zou de PPV vandaag kunnen zijn? 
+
+```{r}
+corrected_ppv <- (medical_ppv*medical_period_t + masstest_ppv*mass_period_t) / (medical_period_t+mass_period_t)
+```
+
+Nu zullen er uiteraard ook steeds artsen zijn die pas een tests voorschrijven bij mensen waar ze sterk vermoeden van coronabesmetting. Dus die ```r masstest_ppv ```% zal in werkelijkheid iets hoger liggen. Als we stellen dat nog steeds ```r format(medical_period_t, scientific=F, big.mark=",") ``` tests per week binnen een degelijke medische diagnose vallen, dan kan het gecorrigeerd PPV ```r round(corrected_ppv,1) ```% zijn.
+
+Maar het probleem blijft: je kan even goed een muntje opgooien om te bepalen of iemand besmettelijk is. De test zit met zoveel vals positieve resultaten dat het onbruikbaar lijkt om besmettelijkheid in de bevolking te bepalen. De Britse regering deed op 7 september 2020 een [aanpassing in haar testbeleid](https://t.co/nFgI9yVrSI) zodat de testing iets nauwkeuriger kan gebeuren. Hoe staat het in België?
+
++ De calculator kan je vinden op [Food and Drug Administration](https://www.fda.gov/media/137612/download). 
++ Ik ga uit van conservatieve 'in het veld' waarden die de British Medical Journal publiceerde in het artikel [Interpreting a covid-19 test result](https://www.bmj.com/content/369/bmj.m1808). De fabrikant van PCR tests zal uiteraard veel betere prestaties van zijn test claimen. 
+
+## En de vals positieven?
+
+Een periode zoals vandaag heeft een mix van massale testing en medisch geassisteerde testing. Bij de massale testing is de kans op een geen besmetting als de test negatief is 100%. Dus negatief is negatief. Bij de medisch geassisteerde test is een negatief resultaat in 44.2% van de gevallen ook echt negatief. Dus er is veel kans dat de persoon wel degelijk besmet is. Dus de eerste periode van tests kan veel meer besmettingen hebben dan gerapporteerd. Gaan we eens kijken hoe de grafiek met besmettingen eruit ziet als we rekening houden met alle valse testresultaten. 
+
+## Gecorrigeerde grafiek 
+
+```{r}
+
+library(stringr)
+library(lubridate)
+
+# get cases
+d_c <- read.csv("https://epistat.sciensano.be/Data/COVID19BE_CASES_AGESEX.csv")
+d_c['date'] = as.Date(d_c$DATE)
+agg_c <-aggregate(x=d_c$CASES, FUN=sum, by = list(date = d_c$DATE))
+#get from 1/6
+agg_c['date'] = as.Date(agg_c$date)
+d_1 <- agg_c[agg_c$date >= "2020-03-15" & agg_c$date <= "2020-11-20",]
+d_1$date <- format(d_1$date,"%d/%m/%Y")
+
+# rename columns 
+names(d_1) <- c("dates","I")
+write.csv(d_1, file="data/cases_wave1.csv", row.names = FALSE)
+
+
+
+agg_c['week'] = ISOweek(agg_c$date)
+names(agg_c)[names(agg_c)=="x"] <- "sum.date"
+agg_c['date'] = as.Date(agg_c$date)
+agg_c_wk <- aggregate(x= agg_c$sum.date, FUN = sum,
+                    by = list(week = agg_c$week))
+names(agg_c_wk)[names(agg_c_wk)=="x"] <- "sum.test.wk"
+
+# get week number
+agg_c_wk['week_nr'] =  str_sub(agg_c_wk$week , -2, -1)
+
+# join table with test
+agg_wk <- left_join(d_t_wk, agg_c_wk, by = "week")
+
+#get from 1/6
+d_c <- agg_c[agg_c$date >= "2020-09-3" & agg_c$date <= "2020-09-24",]
+
+
+# get anytime
+d_c_period1 <- agg_wk[agg_wk$week_nr < 30,]
+d_c_period2 <- agg_wk[agg_wk$week_nr >= 30,]
+
+# correction for false + neg positives
+d_c_period1['sum.test.wk.pos.corr'] = round(d_c_period1$sum.test.wk + ((d_c_period1$sum.test-d_c_period1$sum.test.wk) * ((100-medical_npv) / 100 )),0)
+
+# no false negatives
+d_c_period2['sum.test.wk.pos.corr'] =round(d_c_period2$sum.test.wk*corrected_ppv/100, 0) 
+
+# glue two sets
+d_c <- rbind(d_c_period1, d_c_period2)
+```
+
+```{r}
+library(dplyr)
+# to be able to do regression for dates, express dates as days since startdate
+startdate = min(d_c$date)
+
+for (row in 1:nrow(d_c)){
+  d_c['days_diff'] = (d_c$date - startdate)
+  d_c['date_label'] = format(d_c$date, "%d/%m" )
+}
+
+
+barplot(d_c$x, names.arg = d_c$date_label, main = "Positieve PCR tests afgelopen 3 maanden")
+abline(lm(d_c$x ~d_c$days_diff), col="blue", lty=3, lwd=2)
+```
+
+
+```{r}
+#barplot(d_c$sum.test.wk.corr, names.arg = d_c$week, cex.names = 0.6, col="red",density=0, ylim = c(0, 12000), main = "Aantal positieve tests per week", sub = "Gecorrigeerd voor vals positieven")
+
+
+barplot(d_c$sum.test.wk, names.arg = d_c$week, cex.names = 0.6, border = "green", density = 0, ylim = c(0, 80000), main = "Aantal positieve corona-tests per week, gecorrigeerd 
+        voor vals positieven")
+par(new=TRUE) 
+barplot(d_c$sum.test.wk.pos.corr, border="red", density = 0, ylim = c(0, 80000))
+
+```
+
+Onder die mensen zitten ook mensen die al covid doormaakten en virale restanten hebben 

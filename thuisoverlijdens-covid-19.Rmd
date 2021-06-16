@@ -1,0 +1,36 @@
+---
+title: "Thuisoverlijdens"
+author: "FF"
+date: "1/8/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Geachte Stad Antwerpen
+
+Ik ben onderzoeker die op zoek is naar data voor onderzoek naar het aantal thuisoverlijdens tijdens de coronacrisis.
+
+Kunt u mij enkele A-strook data bezorgen van alle sterftes in Antwerpen ?
+
+Periode:
+1) van 15/3/2020 tot en met vandaag
+2) van 15/3/2019 tot en met vandaag-één jaar geleden
+
+Gegevens (geen namen aub, enkel anoniem):
+	• het thuisadres
+	• het adres van overlijden
+	• de datum van overlijden
+	• het geslacht van de overledene
+	
+overlijdens@stad.antwerpen.be
+
+
+antwoord:
+Beste
+ 
+Bedankt voor uw vraag. We kunnen u de gevraagde gegevens helaas niet afleveren. Adressen zijn persoonsgegevens, die mogen we dus niet delen.
+ 
+De gegevens worden verzameld door de dienst statistiek (Statbel). Zij delen best veel gegevens op hun website. Mogelijk kunnen zij aan andere vragen ook tegemoetkomen zoals het aantal thuisoverlijdens zonder dat er persoonsgegevens gedeeld worden.

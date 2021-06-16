@@ -1,0 +1,167 @@
+[
+	{
+		"id": "BelgiumCOVID19Dashboard",
+		"type": "webpage",
+		"abstract": "Google Data Studio turns your data into informative dashboards and reports that are easy to read, easy to share, and fully customizable.",
+		"container-title": "Google Data Studio",
+		"language": "nl",
+		"title": "Belgium COVID-19 Dashboard - Sciensano",
+		"URL": "http://datastudio.google.com/reporting/c14a5cfc-cab7-4812-848c-0369173148ab/page/tpRKB?feature=opengraph",
+		"accessed": {
+			"date-parts": [
+				[
+					"2021",
+					4,
+					15
+				]
+			]
+		}
+	},
+	{
+		"id": "VlaamseRegeringPlant",
+		"type": "webpage",
+		"title": "Vlaamse regering plant testevenement met 1.000 studenten in Hasselt - België - Knack",
+		"URL": "https://www.knack.be/nieuws/belgie/vlaamse-regering-plant-testevenement-met-1-000-studenten-in-hasselt/article-belga-1711147.html?cookie_check=1617870927",
+		"accessed": {
+			"date-parts": [
+				[
+					"2021",
+					4,
+					15
+				]
+			]
+		}
+	},
+	{
+		"id": "Covid19LateralFlow",
+		"type": "webpage",
+		"title": "Covid-19: Lateral flow tests are better at identifying people with symptoms, finds Cochrane review | The BMJ",
+		"URL": "https://www.bmj.com/content/372/bmj.n823",
+		"accessed": {
+			"date-parts": [
+				[
+					"2021",
+					4,
+					15
+				]
+			]
+		}
+	},
+	{
+		"id": "watsonInterpretingCovid19Test2020",
+		"type": "article-journal",
+		"abstract": "### What you need to know\n\nAcross the world there is a clamour for covid-19 testing, with Tedros Adhanom Ghebreyesus, director general of the World Health Organization, encouraging countries to “test, test, test.”1 The availability of the complete genome of covid-19 early in the epidemic facilitated development of tests to detect viral RNA.2 Multiple assays with different gene targets have been developed using reverse transcriptase polymerase chain reaction (RT-PCR).3 These viral RNA tests use samples usually obtained from the respiratory tract by nasopharyngeal swab, to detect current infections. Serology blood tests to detect antibodies indicating past infection are being developed; these will not be considered in depth in this article.\n\nTesting for covid-19 enables infected individuals to be identified and isolated to reduce spread,4 allows contact tracing for exposed individuals,5 and provides knowledge of regional and national rates of infection to inform public health interventions. However, questions remain on how to apply test results to make optimal decisions about individual patients.\n\n### Search strategy\n\nThis article was produced at speed to address an urgent need to address uncertainties in testing for covid-19. We searched Pubmed using the terms “covid”, “SARS-CoV-2”, “sensitivity”, “specificity”, “diagnosis”, “test”, and “PCR”, and KSR evidence using terms for covid and test. This was supplemented by discussion with colleagues undertaking formal systematic reviews into covid-19 diagnosis.\n\nNo test gives a …",
+		"container-title": "BMJ",
+		"DOI": "10.1136/bmj.m1808",
+		"ISSN": "1756-1833",
+		"journalAbbreviation": "BMJ",
+		"language": "en",
+		"note": "publisher: British Medical Journal Publishing Group\nsection: Practice\nPMID: 32398230",
+		"page": "m1808",
+		"source": "www.bmj.com",
+		"title": "Interpreting a covid-19 test result",
+		"URL": "https://www.bmj.com/content/369/bmj.m1808",
+		"volume": "369",
+		"author": [
+			{
+				"family": "Watson",
+				"given": "Jessica"
+			},
+			{
+				"family": "Whiting",
+				"given": "Penny F."
+			},
+			{
+				"family": "Brush",
+				"given": "John E."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2021",
+					4,
+					15
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2020",
+					5,
+					12
+				]
+			]
+		}
+	},
+	{
+		"id": "FDACalculatorPositive",
+		"type": "article",
+		"title": "FDA Calculator for Positive Predictive Value (PPV) and Negative Predictive Value (NPV) for individual tests and combined Tests",
+		"URL": "https://www.fda.gov/media/137612/download"
+	},
+	{
+		"id": "Covid82Positive2021",
+		"type": "article-newspaper",
+		"abstract": "There had been concerns that large numbers would have to self-isolate after a false positive result.",
+		"container-title": "BBC News",
+		"language": "en-GB",
+		"section": "Health",
+		"source": "www.bbc.com",
+		"title": "Covid: 82% of positive rapid tests 'were correct'",
+		"title-short": "Covid",
+		"URL": "https://www.bbc.com/news/health-56750460",
+		"accessed": {
+			"date-parts": [
+				[
+					"2021",
+					4,
+					15
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2021",
+					4,
+					15
+				]
+			]
+		}
+	},
+	{
+		"id": "daviesVastMajorityPositive2021",
+		"type": "webpage",
+		"abstract": "Data from March 11 to 18 shows 1,805 positive results from 3.8million tests taken. Given the current best-guess false-positive rate, only 645 of those are likely to be genuine infections.",
+		"container-title": "Mail Online",
+		"note": "section: News",
+		"title": "'Vast majority' of positive rapid Covid tests are 'likely to be false'",
+		"URL": "https://www.dailymail.co.uk/news/article-9421757/Covid-19-Vast-majority-positive-rapid-Covid-tests-likely-false-scientist-claims.html",
+		"author": [
+			{
+				"family": "Davies",
+				"given": "Joe"
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2021",
+					4,
+					15
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2021",
+					3,
+					31
+				]
+			]
+		}
+	}
+]

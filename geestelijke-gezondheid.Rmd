@@ -1,0 +1,70 @@
+---
+title: "Statistieken van de geestelijke gezondheid sinds coronacrisis"
+author: "FF"
+date: "16 juni 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+source(file = "shared/general.R")
+source(file = "shared/depression.R")
+source(file = "shared/suicide.R")
+source(file = "shared/violence.R")
+source(file = "shared/covid-death.R")
+```
+
+```{r}
+
+# violence
+today <- format(Sys.Date(), "%d/%m/%y")
+
+#summary
+DALY_total_low <- DALY_depr_impact_low + YLD_suicatt_impact + DALY_suic_impact_low
+DALY_total_high <- DALY_depr_impact_high + YLD_suicatt_impact + DALY_suic_impact_high
+```
+
+## Belangrijkste punten
+
+* Sinds de coronamaatregelen heeft een golf van ernstige psychische problemen een grote negatieve impact op de volksgezondheid (minstens tussen `r format(DALY_total_low, big.mark = ",") ` en `r format(DALY_total_high, big.mark = ",") ` verloren gezonde levensjaren). 
+* Depressies komen vier keer vaker voor bij jongvolwassenen dan bij mensen 65 of ouder. Meer depressies bij de alleenstaanden met of zonder kind, bij mensen met een lagere opleiding, werkzoekenden, en arbeidsongeschikten.
+* Zelfmoordpogingen komen naar schatting `r suicatt_ratio` keer meer voor dan in 2018.
+* Bij huiselijk geweld zijn vooral kinderen het slachtoffer, wat duidt op kindermishandeling. 
+* Nood aan essentiële cijfers in België: hoeveel zelfmoorden? hoeveel kindermishandeling?
+* Onzekerheden: 
+  + De cijfers kunnen een overschatting zijn. De antwoorden komen van de enquete-deelnemers zelf, maar werden niet bevestigd door professionals. 
+  + Ook weten we niet hoe jongeren en kinderen zich voelen. 
+  + De zelfmoorden zijn op basis van zelfmoordpogingen en het aandeel 'gelukte' pogingen uit vorige jaren. Dit kan tijdens de huidige crisis anders zijn. 
+  + De impact van huiselijk geweld is hoogstwaarschijnlijk aanzienlijk omdat vooral kinderen slachtoffer zijn. Zij hebben nog een heel leven te gaan. Over hoeveel kinderen het gaat, is niet bekend.
+  
+**Geestelijke gezondheid is een [topprioriteit](post-5-prioriteiten-volksgezondheid.html) voor een betere volksgezondheid. Daarom een overzicht met de best mogelijke schatting van de huidige toestand van de geestelijke gezondheid van de Belgische bevolking.**
+
+Domein | Aantal België | % | Impact* | Periode tot | Mogelijke vertekening | Bron
+-------|--------|---|-------------|-----|-----|------
+Depressie | `r format(depr, big.mark = ",") ` (`r format(depr_2018, big.mark = ",") `)  | `r prop_depr * 100 ` (`r prop_depr_2018*100 `) | `r format(DALY_depr_impact_low, big.mark = ",") ` -  `r format(DALY_depr_impact_high, big.mark = ",") ` | Eind Maart 2021 | enkel 18 jaar en ouder / zelfrapportage | [zesde COVID-19 gezondheidsenquête](https://www.sciensano.be/nl/biblio/zesde-covid-19-gezondheidsenquete-eerste-resultaten)
+Suïcidepoging (1 of meer) **** | `r format(suicatt, scientific=F, big.mark=",") ` (`r format(suicatt_2018_corr, scientific=F, big.mark=",")` ) | `r prop_suicatt` (`r round(suicatt_2018_corr_rel,2)`) |`r format(YLD_suicatt_impact, big.mark = ",") `  | Eind Maart 2021 | enkel 18 jaar en ouder / zelfrapportage / bij jongeren grote onzekerheid | [Wat weten we over zelfmoordpogingen tijdens deze coronacrisis?](post-2-zelfmoordpogingen.html)
+Suïcides** |`r format(pred_suicatt_succes, scientific=F, big.mark=",")` (`r format(suic_2017_corr, scientific=F, big.mark=",")`) | `r format(pred_suicatt_succes_rel, scientific=F) ` (`r format(suic_2017_corr_rel, scientific=F) `)| `r format(DALY_suic_impact_low, scientific=F, big.mark=",") ` -  `r format(DALY_suic_impact_high, scientific=F, big.mark=",") `| Eind Maart 2021 | enkel 18 jaar en ouder / geschat vanuit zelfrapportage suïcidepogingen | [Wat weten we over zelfmoordpogingen tijdens deze coronacrisis?](post-2-zelfmoordpogingen.html)
+Huiselijk geweld*** | `r format(dir_violence_abs, scientific=F, big.mark=",")` (?)  | `r format(p_dir_violence*100, scientific=F)` (?)  | ? | Half Mei 2020 | zelfrapportage / meer vrouwen dan mannen / hoog opgeleid / enkel Vlaanderen | [Onderzoek naar Relaties, Stress en Aggressie (RSA) ten tijde van COVID-19 in België—Eerste resultaten mei 2020](https://biblio.ugent.be/publication/8664819)
+Covid-19 gerelateerde overlijdens | `r format(covid_deaths, big.mark = ",") ` | `r round(covid_deaths_rel, 2) ` | `r format(covid_HLYL, big.mark = ",") ` - `r format(covid_YLL, big.mark = ",") ` | `r today` | Discussie gaande over wat telt als covid-dode (labo-bevestigd positief / oorzaak / onderliggend) / Impact variëert enorm naargelang je kijkt naar gezonde levensjaren, danwel levensverwachting |  [Sciensano covid-19 monitor](https://epistat.wiv-isp.be/covid/)
+
+* () tussen haakjes vind je de cijfers voor een vergelijkbare periode van voor de coronacrisis
+* *de impact van de coronamaatregelen op de volksgezondheid druk ik uit in verloren gezonde levensjaren (DALYs [Global Burden of Disease study](http://ghdx.healthdata.org/gbd-results-tool))
+* ** opletten met deze cijfers, want het zijn afgeleiden. Ik ga er namelijk van uit dat evenveel pogingen uit het leven te stappen 'lukken' als voorheen, al blijft dit dus onzeker (het kan dus meer of minder zijn)
+* *** slachtoffers van *herhaaldelijk* direct huiselijk geweld (psychisch, fysiek, sexueel). Kinderen zijn het grootste slachtoffer. In 2019 melde het [jaarrapport van de hulplijn 1712](https://1712.be/Portals/1712volw/Files/Documents/2019Jaarrapport1712FINAL.pdf) meldt dat 60% van de hulpoproepen te maken hebben met kindermishandeling.
+* **** cijfers na communicatie met Sciensano
+
+Ter vergelijking, [Moser en collega's](https://doi.org/10.1192/j.eurpsy.2020.56) vinden een vele hogere hogere impact op de psychische volksgezondheid. Mijn schatting zou dus een best case scenario kunnen zijn.
+
+## Oversterfte
+
+Bij elk overlijden moet een arts de dood vaststellen, en op de C-strook van het [overlijdenscertificaat](https://www.zorg-en-gezondheid.be/databestand-sterftecertificaten-personen-van-1-jaar-of-ouder) invullen wat de oorzaak was van het overlijden. De oorzaken zijn ofwel natuurlijke doodsoorzaken (ziekten) ofwel uitwendige doodsoorzaken (ongevallen, suïcide, moord). De verwerking van de overlijdenscertificaten gebeurt in Vlaanderen door Zorg en Gezondheid. 3 jaar later publiceert [Zorg en Gezondheid](https://www.zorg-en-gezondheid.be/statistiek-van-de-doodsoorzaak) en [STATBEL](https://statbel.fgov.be/nl) de statistieken naar oorzaak van sterfte. Volksgezondheid Engeland [rapporteert](https://fingertips.phe.org.uk/static-reports/mortality-surveillance/excess-mortality-in-england-latest.html) *wekelijks* degelijke rapporten met de oorzaken van sterfte. Wat is er voor nodig dat ook België dit doet? 
+
+**Thuissterfte**
+
+Men gaat ervan uit dat het aantal mensen dat thuis stierf aanzienlijk hoger is tijdens de crisis. In Engeland ziet men dit duidelijk in de statistieken. Waarschijnlijk willen mensen niet naar het hospitaal bij dringende hulp uit angst voor covid-19 of uit angst in eenzaamheid te sterven zonder nabijheid van geliefden. Van interesse is dus ook de plaats van overlijden. Deze gegevens staan op de A-strook die de gemeentes bijhouden. 
+
+## Hoe komt het dat we bepaalde gegevens niet weten? 
+
+Goeie vraag. Algemeen heb ik het gevoel dat we ons psychische welzijn als minder belangrijk zien dan lichamelijke gezondheid. Je ziet dat ook aan de budgetten. De Belgische overheid heeft van de 30 miljard € die naar volksgezondheid gaat, [amper 1,8 miljard (6%) veil voor een psychisch gezondere bevolking](https://www.vrt.be/vrtnws/nl/2019/05/05/geestelijke-gezondheidszorg-draait-slecht-budget-best-verdubbe/). Ik denk ook dat het taboe rond zelfmoord en familiaal geweld, en vooral kindermisbruik, groot is. 
+
+Aangezien zelfmoord vooral bij mannen de grootste impact heeft op volksgezondheid, zou het logisch zijn dat de overheid regelmatig gegevens rapporteert. Gezondheidswerkers (huisartsen, psychologen, CAWs) zouden (anonieme) monitoring van familiaal geweld kunnen doen via een *eenvoudig* formulier op een beveiligde overheidsportaal. 

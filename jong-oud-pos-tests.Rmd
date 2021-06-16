@@ -1,0 +1,17 @@
+---
+title: Verspreidt het virus zich van jongeren naar de meest kwetsbaren?
+
+author: "FF"
+date: "27/1/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+library(dplyr)
+```
+
+Er is veel te doen over de rol die kinderen & jongeren zouden hebben in het 'besmetten' van de oudere, meest kwetsbare groepen in de bevolking. Maar hebben ze een belangrijke rol in de verspreiding van de corona-epidemie? 
+
++ [Analyse van de situatie Januari 2021](jong-oud-pos-tests-01-2021.html)
++ [Analyse van de situatie November 2020](jong-oud-pos-tests-11-2020.html)

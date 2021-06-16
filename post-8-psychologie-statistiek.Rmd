@@ -1,0 +1,130 @@
+---
+title: "Psychologie van de grafiek"
+author: "FF"
+date: "27/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(include = FALSE, eval = FALSE)
+source(file = "shared/general.R")
+source(file = "shared/covid-death.R")
+```
+
+
+> Waaraan zal je sterven? Bijna zeker aan iets anders dan COVID-19.
+
+De website van Sciensano toont verschillende statistieken die volgens mij de angst voor COVID-19 verhogen. Omdat er bijvoorbeeld geen achtergrond info is zodat je de cijfers moeilijk kan begrijpen. Neem nu de angst bij de bevolking om te sterven aan COVID-19. 
+
+Dit is de eindeloos veel getoonde Sciensano grafiek met dodenaantallen per leeftijd:
+
+```{r echo=T}
+barplot(d_agg$x, names.arg = d_agg$agegroup, ylim=c(0,4000))
+```
+
+```{r include=FALSE}
+## correct age groups
+library(dplyr)
+
+to_correct = c("0-24", "25-44", "45-64")
+
+# get current correct age groups 
+d_agg_cor <- d_agg
+
+for (i in to_correct){
+  d_agg_cor <- d_agg_cor[!(d_agg_cor$agegroup==i),]  
+}
+
+# get current correct age groups 
+for (row in 1:nrow(d_agg)) {
+  agegroup <- d_agg[row, "agegroup"]
+  val <- d_agg[row, "x"]
+  val1 = round(val*1/3, 0)
+  val2 = round(val*2/3, 0)
+  
+  if ("0-24" %in% agegroup) {
+    d_agg_cor <- d_agg_cor %>% add_row(agegroup="0-14", x=val1)
+    d_agg_cor <- d_agg_cor %>% add_row(agegroup='15-24', x=val2)
+  }
+  if ("25-44" %in% agegroup) {
+    d_agg_cor <- d_agg_cor %>% add_row(agegroup="25-34", x=val1)
+    d_agg_cor <- d_agg_cor %>% add_row(agegroup='35-44', x=val2)
+  }
+  if ("45-64" %in% agegroup) {
+    d_agg_cor <- d_agg_cor %>% add_row(agegroup="45-54", x=val1)
+    d_agg_cor <- d_agg_cor %>% add_row(agegroup='55-64', x=val2)
+  }
+}
+
+# sort
+library(plyr)
+d_agg_cor <- arrange(d_agg_cor, agegroup)
+d_agg_cor <- d_agg_cor %>% select(-3)
+
+```
+
+Wat zie je bij de leeftijdsgroepen? Die zijn ongelijk verdeeld. Zo zitten in de groep '65 tot 74' 10 leeftijdsjaren. Maar in de groep '45-64' plots 20 levensjaren. Dus in de jongere groepen zitten grotere bevolkingsgroepen dan in de oudere leeftijfsgroepen. Dat geeft een vals "dreigend" beeld. Laten we dat corrigeren zodat leeftijdsgroepen 10 leeftijden bevatten. Dan krijg je deze grafiek:
+
+
+```{r echo=FALSE}
+barplot(d_agg_cor$x, names.arg = d_agg_cor$agegroup, ylim=c(0,4000))
+```
+
+Dat ziet er al anders uit. COVID-19 lijkt vooral een 'oude mensen'-aandoening. 
+
+## Hoe verhoudt COVID-19 zich met algemene sterfte?
+
+Wat zegt nu bijvoorbeeld de COVID-19 gerelateerde sterfte van de 75-84 jarigen? Is dat een bedreiging voor de volksgezondheid? [EuroSTAT](https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=hlth_cd_aro&lang=en) biedt cijfers voor België. Blijkt dat er jaarlijks 32,000 mensen in deze leeftijdsgroep sterven.  
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+# library
+library(ggplot2)
+library(viridis)
+
+# create dataset
+d_all_cause <- read.csv("data/all_cause_death_byage.csv")
+d_all_cause$death_cause <- "Alle oorzaken"
+d_all_cause$X <- NULL
+# rename x column to value
+names(d_agg_cor) <- c('agegroup', 'value')
+names(d_agg_cor)
+d_agg_cor$death_cause <- "COVID-19 gerelateerd"
+d_agg_cor$x <- NULL
+
+data <- rbind(d_all_cause, d_agg_cor)
+data <- arrange(data, agegroup)
+  
+```
+
+```{r}
+# stacked barplot
+
+ggplot(data, aes(fill=death_cause, y=value, x=agegroup)) +
+  geom_bar(position = "stack", stat = "identity") +
+  ggtitle("Jaarlijkse sterfte over leeftijdsgroepen") +
+  xlab("")
+```
+
+
+De grafiek toont dat de COVID-19 gerelateerde sterfte een zeer klein deel is van de totale sterfte. Afhankelijk van de leeftijdsgroep heb je tussen de 92 en de 100% kans om aan iets anders te sterven. Bekijk mijn artikel [Wat zijn de prioriteiten bij het beschermen van de volksgezondheid?](post-5-prioriteiten-volksgezondheid.html) voor meer achtergrond. 
+
+Aangezien de levensverwachting in België vandaag staat op ```r life_expectancy``` jaar, zijn overlijdens op hogere leeftijd zeer normaal. Als we dit in rekening brengen krijgen we deze grafiek:
+
+```{r echo=FALSE}
+# stacked barplot
+caption<- paste(strwrap("Normale sterfte door ouderdom", 10), collapse = "\n")
+
+ggplot(data, aes(fill=death_cause, y=value, x=agegroup)) +
+  geom_bar(position = "stack", stat = "identity") +
+  ggtitle("Jaarlijkse sterfte over leeftijdsgroepen") +
+  geom_rect(xmin=8, xmax=Inf, ymin = 0, ymax = Inf, alpha = 0.2) +
+  annotate(
+    geom = "text", x = life_expectancy/10, y = 3000, 
+    label = caption, hjust = 0, vjust = -1, size = 4) + 
+  xlab("")
+```
+
+Van covid-19 sterfte blijft er zo goed als niets over. Duidelijk is dat een Belg aan iets anders zal overlijden. Maar laten we nu vooral genieten van het leven dat we hebben.
+
+Bedenking: de 'grote' epidemiegolf is voorbij. Maar het jaar 2020 is nog lopende, dus er kan nog COVID-19 gerelateerde sterfte bijkomen. Indien substantieel, zal ik een update van deze pagina doen.

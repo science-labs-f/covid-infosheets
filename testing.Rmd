@@ -1,0 +1,147 @@
+---
+title: "Tests"
+author: "FF"
+date: "9/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+```
+
+De labo PCR test die de overheid gebruikt om besmettelijke mensen op te sporen heeft een grote invloed op de maatregelen die eruit volgen. Helaas heeft elke test, dus ook deze PCR test, last van vals positieven en vals negatieven. Hierdoor zullen onnodig mensen thuis blijven in afzondering. Of mensen die besmettelijk zijn toch de wereld instappen. 
+
+Wil nu het geval dat het testbeleid helemaal veranderde rond 20 juli 2020 (week 30). Massaal testen werd de norm. Van diagnostiek naar screening. En dat is ene context waar vals positieven en vals negatieven belangrijk worden. 
+
+```{r }
+library(ISOweek)
+
+
+#parameters
+test_ignore_days = 2 #set number of days to look back for consistent data
+daily_sympt_people = 7500
+test_sens = 0.70 # BMJ ref https://www.bmj.com/content/369/bmj.m1808
+test_spec = 0.95 
+sympt_prior_odd_not_pos = 3 #  BEFORE test estimate: for every person with symptoms that tests positive, the number of people who will not test positive (eg 1:3 corresponds with 0.25 chance)
+asympt_prior_odd_not_pos = 19 # ~ without symptoms
+
+d <- read.csv("https://epistat.sciensano.be/Data/COVID19BE_tests.csv")
+
+d_t <- d
+d_t['date'] = as.Date(d_t$DATE)
+d_t['week'] = ISOweek(d_t$date)
+
+# aggregate by date
+d_t <- aggregate(cbind(TESTS_ALL,TESTS_ALL_POS) ~ date, data= d_t, FUN = sum)
+
+# make 7 day rolling avg of data
+library(zoo) # moving averages
+d_t$tests_all_7da <- round( zoo::rollmean(d_t$TESTS_ALL, k=7, fill = NA, align = c("right") ), 0)
+d_t$tests_all_pos_7da <- round(zoo::rollmean(d_t$TESTS_ALL_POS, k=7, fill = NA, align = c("right") ), 0)
+## remove unneeded vars
+d_t <- subset(d_t, select = -c(TESTS_ALL, TESTS_ALL_POS))
+
+## get latest 30 days of data
+today <- Sys.Date()
+start_date <- today - 31
+stop_date <- today - test_ignore_days
+d_t <- d_t[d_t$date >= start_date & d_t$date <= stop_date,]
+
+# stable scenario 1 7500 symptomatic people on test (e.g. stable virus circulation)
+d_t$sympt_s1<- daily_sympt_people
+d_t$asympt_s1<- d_t$tests_all_7da- daily_sympt_people
+
+# growth scenario 2 (3 phases: start, mid, end)
+## first check evolution of pos tests
+plot(tests_all_pos_7da ~ date, data = d_t)
+
+## we see a fairly lineair growth from around 2000 towards 3250 in the middle and 5500 most recently (later do this mathematically)
+rel_change <- (3250 - 2000) / 3250
+
+## create 3 phases
+start_mid_phase <- start_date + 10
+start_end_phase <- start_date + 20
+d_t$phase <- ifelse(d_t$date < start_mid_phase, 1, ifelse(d_t$date < start_end_phase, 2, 3))
+
+## calculate 
+d_t$sympt_s2<- ifelse(d_t$phase == 1 , round(daily_sympt_people - (daily_sympt_people * rel_change), 0) , ifelse(d_t$phase == 2, round(daily_sympt_people, 0), round(daily_sympt_people + (daily_sympt_people * rel_change), 0) ))
+d_t$asympt_s2<-d_t$tests_all_7da - d_t$sympt_s2
+
+## calc expected, found and true positives
+bayes_factor_pos = test_sens / (1 - test_spec)
+sympt_PPV = bayes_factor_pos / (bayes_factor_pos + sympt_prior_odd_not_pos) # positive predictive value
+asympt_PPV = bayes_factor_pos / (bayes_factor_pos + asympt_prior_odd_not_pos) # positive predictive value
+
+## work out scenario 1
+d_t$symp_exp_pos_s1 <- round( d_t$sympt_s1 * (1 / (sympt_prior_odd_not_pos +1) ) , 0)
+d_t$asymp_exp_pos_s1 <- round( d_t$asympt_s1 * ( 1/ (asympt_prior_odd_not_pos +1) ) ,0)
+
+d_t$symp_obs_pos_s1 <- round(d_t$symp_exp_pos_s1 * test_sens , 0)
+d_t$asymp_obs_pos_s1 <- round(d_t$asymp_exp_pos_s1 * test_sens , 0)
+d_t$symp_obs_true_pos_s1 <- round(d_t$symp_obs_pos_s1 * sympt_PPV , 0)
+d_t$asymp_obs_true_pos_s1 <- round(d_t$asymp_obs_pos_s1 * asympt_PPV , 0)
+
+## sum with test performance
+d_t$exp_pos_s1 <- d_t$symp_exp_pos_s1 + d_t$asymp_exp_pos_s1
+d_t$obs_pos_s1 <-d_t$symp_obs_pos_s1 + d_t$asymp_obs_pos_s1
+d_t$obs_true_pos_s1 <- d_t$symp_obs_true_pos_s1 + d_t$asymp_obs_true_pos_s1
+d_t$test_perf_s1 <- d_t$obs_true_pos_s1 / d_t$exp_pos_s1  # test ability to pick out infectious cases
+
+# remove unneeded vars
+d_t <- subset(d_t, select = -c(symp_exp_pos_s1, asymp_exp_pos_s1, symp_obs_pos_s1, asymp_obs_pos_s1, symp_obs_true_pos_s1, asymp_obs_true_pos_s1))
+
+
+## work out scenario 2
+d_t$symp_exp_pos_s2 <- round( d_t$sympt_s2 * (1 / (sympt_prior_odd_not_pos +1) ) , 0)
+d_t$asymp_exp_pos_s2 <- round( d_t$asympt_s2 * ( 1/ (asympt_prior_odd_not_pos +1) ) ,0)
+
+d_t$symp_obs_pos_s2 <- round(d_t$symp_exp_pos_s2 * test_sens , 0)
+d_t$asymp_obs_pos_s2 <- round(d_t$asymp_exp_pos_s2 * test_sens , 0)
+d_t$symp_obs_true_pos_s2 <- round(d_t$symp_obs_pos_s2 * sympt_PPV , 0)
+d_t$asymp_obs_true_pos_s2 <- round(d_t$asymp_obs_pos_s2 * asympt_PPV , 0)
+
+## sum with test performance
+d_t$exp_pos_s2 <- d_t$symp_exp_pos_s2 + d_t$asymp_exp_pos_s2
+d_t$obs_pos_s2 <-d_t$symp_obs_pos_s2 + d_t$asymp_obs_pos_s2
+d_t$obs_true_pos_s2 <- d_t$symp_obs_true_pos_s2 + d_t$asymp_obs_true_pos_s2
+d_t$test_perf_s2 <- d_t$obs_true_pos_s2 / d_t$exp_pos_s2  # test ability to pick out infectious cases
+
+# remove unneeded vars
+d_t <- subset(d_t, select = -c(symp_exp_pos_s2, asymp_exp_pos_s2, symp_obs_pos_s2, asymp_obs_pos_s2, symp_obs_true_pos_s2, asymp_obs_true_pos_s2))
+
+```
+
+```{r}
+library(ggplot2)
+theme_set(theme_minimal())
+
+ggplot(data = d_t, aes(x = date)) +
+  geom_line(aes(y = obs_pos_s1), color = "steelblue", linetype="twodash") +
+  geom_line(aes(y = obs_true_pos_s1), color = "orange", linetype="twodash")
+```
+
+```{r}
+
+# Value used to transform the data
+coeff <- 10
+
+ggplot(data = d_t, aes(x = date)) +
+  geom_line(aes(y = obs_pos_s1), color = "steelblue") +
+  geom_line(aes(y = tests_all_7da / coeff), color = "orange", linetype="twodash") +
+  
+  scale_y_continuous(
+    
+    name = "# infected",
+    
+    sec.axis = sec_axis(~.*coeff, name = "# tests")
+  )
+
+ggplot(data=d_t, aes(x = date)) +
+  geom_line(aes(y = tests_all_pos_7da), colour="red") +
+  geom_line(aes(y = tests_all_7da / coeff), colour="blue") +
+  scale_y_continuous(sec.axis = ~.*coeff)+
+  theme(axis.text.y.left = element_text(color = "red"),
+        axis.text.y.right = element_text(color = 'blue'))
+```
+

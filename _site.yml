@@ -1,0 +1,16 @@
+name: "my-website"
+navbar:
+  title: "Coronavirus: Flatten The Fear"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Over"
+      href: about.html
+output:
+  html_document:
+    theme: journal
+    highlight: textmate
+    include: 
+      after_body: footer.html
+    css: styles.css
+exclude: ["data/", "*.csv"]
