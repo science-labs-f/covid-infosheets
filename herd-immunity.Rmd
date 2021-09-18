@@ -1,7 +1,7 @@
 ---
-title: "De contouren van groepsimmuniteit?"
+title: "Welke immuniteit heeft de Belgische bevolking ?"
 author: "FF"
-date: "18/2/2020"
+date: "3/9/2021"
 output: html_document
 ---
 
@@ -11,18 +11,15 @@ library(dplyr)
 source("shared/general.R")
 ```
 
-> Zou voorafbestaande T-cell en B-cell immuniteit al voldoende bescherming kunnen bieden ?
+> Zou voorafbestaande T-cell en B-cell immuniteit al bescherming kunnen bieden ?
 
-+ Reeds bestaande T-cellen immuniteit verdringen de naïeve gedachte dat antilichamen de enige vorm van afweer zijn.
++ Reeds bestaande immuniteit verdringt de naïeve gedachte dat antilichamen de enige vorm van afweer zijn.
 + Blootstelling leidt niet noodzakelijk tot infectie, infectie zal niet noodzakelijk leiden tot ziekte, en ziekte zal niet noodzakelijk tot detecteerbare antilichamen leiden. 
++ Er is een hoge graad van immuniteit onder de bevolking
 
-Half juli was het weer van dat. Expert-virologen sloegen alarm want het aantal positief geteste mensen steeg dagelijks. Er zou een tweede golf met hospitalisaties en doden komen. Ik neem aan dat dit uit hun  voorspellende modellen komt. Helaas zijn die modellen fout, omdat de epidemiologische werkelijkheid ingewikkeld is (quote van Brits statisticus George Box). De tweede golf kwam er ook niet.Dat was voor het najaar.
+Half Juli 2020 was het weer van dat. Expert-virologen sloegen alarm want het aantal positief geteste mensen steeg dagelijks. Er zou een tweede golf met hospitalisaties en doden komen. Ik neem aan dat dit uit hun  voorspellende modellen komt. Helaas zijn die modellen "fout, hoogstens hier en daar nuttig." (quote van Brits statisticus George Box) De epidemiologische werkelijkheid is namelijk ingewikkeld. De tweede golf kwam er ook niet.Dat was voor het najaar.
 
-```{r}
-infected <- population_be * Sero_Prev_BE/100
-```
-
-In tegenstelling tot Maart-April 2020, voorspellen de cases niet goed de hospitalisaties of overlijdens. Dat komt onder andere omdat [de leeftijd van de cases veel jonger is](post-6-covid-verdwijnen.html) (zie hoofding 'Jongere cases'). De virusbesmettingen lopen dus doorheen de bevolking in twee golven. De eerste periode bij oudere (zwakkere) mensen en de zomer 2020 bij jongere (sterkere) mensen. Maar misschien groeide de immuniteit ook al aardig aan? 
+In tegenstelling tot Maart-April 2020, voorspelden de 'zomerse' cases niet goed de hospitalisaties of overlijdens. Dat komt onder andere omdat [de leeftijd van de cases veel jonger is](post-6-covid-verdwijnen.html) (zie hoofding 'Jongere cases'). De virusbesmettingen lopen dus doorheen de bevolking in twee golven. De eerste periode bij oudere (zwakkere) mensen en de zomer 2020 bij jongere (sterkere) mensen. Maar misschien groeide de immuniteit ook al aardig aan? 
 
 <!-- Onderzoek geeft aan dat ook voor het coronavirus 'geheugen' afweercellen en gekruiste immuniteit aanwezig is. Het doet vermoeden dat we dicht bij een groepsimmuniteit zijn.  -->
 
@@ -36,37 +33,66 @@ Vooral kinderen hebben een sterke aangeboren afweer. Hun ziektesymptomen zijn va
 
 ### Verworven
 
-Na een eerste infectie verdwijnen afweerstoffen snel. Naar schatting bouwde `r format(infected, big.mark = ",") ` (`r Sero_Prev_BE` %) Belgen verworven immuniteit op met antilichamen op na een infectie ([Herzog](https://doi.org/10.1101/2020.06.08.20125179)). Tegelijk 'onthoudt' het lichaam de kenmerken van het virus (of een andere ongewenste indringer). Als die indringer een volgende keer aanklopt, zal het lichaam een zeer sterke afweer tonen (sterker dan de eerste keer). Die immuniteit kan soms jarenlang blijven. Bij mensen boven de 80 jaar zien we bijna geen verworven afweer meer [Herzog](https://doi.org/10.1101/2020.06.08.20125179) / [Monash University](https://medicalxpress.com/news/2020-06-cell-immunity-elderly.html). Ze zijn daarom kwetsbaar voor ziekte. 
+Na een eerste infectie verdwijnen afweerstoffen vrij snel. Tegelijk 'onthoudt' het lichaam de kenmerken van het virus (of een andere ongewenste indringer). Als die indringer een volgende keer aanklopt, zal het lichaam een zeer sterke afweer tonen (sterker dan de eerste keer). Die immuniteit kan soms jarenlang blijven. 
 
-Vandaag hebben we deze situatie:
+Bij mensen boven de 80 jaar zien we bijna geen verworven afweer meer [Herzog](https://doi.org/10.1101/2020.06.08.20125179) / [Monash University](https://medicalxpress.com/news/2020-06-cell-immunity-elderly.html). Ze zijn daarom kwetsbaar voor ziekte.
 
-[bekijk en reageer op analyse](https://drive.google.com/file/d/16begbHI3hEBYQ-FtQdTD-C9uBB-HXVql/view?usp=sharing)
+```{r}
+
+infected <- population_be * Sero_Prev_BE/100
+infected_lower <- population_be * Sero_Prev_BE_lower/100
+infected_upper <- population_be * Sero_Prev_BE_upper/100
+
+off_cases_until_dec = 650000
+infections_december_2020_now = 540000
+multiplyer_lower = infected_lower / off_cases_until_dec
+multiplyer_upper = infected_upper / off_cases_until_dec
+
+#current estimates
+infections_december_2020_now_lower = infections_december_2020_now * multiplyer_lower
+infections_december_2020_now_upper = infections_december_2020_now * multiplyer_upper
+
+# totals
+infected_current_lower = infected_lower + infections_december_2020_now_lower
+infected_current_upper = infected_upper + infections_december_2020_now_upper
+infected_current_prop_lower = round(infected_current_lower/population_be * 100, 1) 
+infected_current_prop_upper = round(infected_current_upper/population_be * 100, 1) 
+```
+
+
+Eind december 2020 hadden naar schatting minstens tussen de `r format(infected_lower, big.mark = ",") ` (`r Sero_Prev_BE_lower` %) en `r format(infected_upper, big.mark = ",") ` (`r Sero_Prev_BE_upper` %) Belgen  verworven of natuurlijke immuniteit op. ([Sciensano covid-monitor](https://datastudio.google.com/embed/reporting/7e11980c-3350-4ee3-8291-3065cc4e90c2/page/ZwmOB)). Extrapolatie op basis van het aantal officiële besmettingen en met de wetenschap dat herbesmettingen zelden voorkomen, zou aangeven dat vandaag tussen de `r format(infected_current_lower, big.mark = ",") ` (`r infected_current_prop_lower` %) en `r format(infected_current_upper, big.mark = ",") ` (`r infected_current_prop_upper` %) Belgen natuurlijke immuniteit hebben tegen covid-19.
+
+Vandaag zouden we dan deze situatie hebben:
 
 ![](img/weerstand.png)
 
+### Vaccinatie
+
+Vacccinatie geeft bijkomende bescherming tegen covid. Vandaag zijn 8.146.325 (70.7%) Belgen gevaccineerd. 
+
 ## Wat is de Belgische groepsimmuniteit bij COVID-19?
 
-Niemand weet het exact. Maar er zijn wel aanwijzingen. Op plekken waar mensen dicht bij elkaar zijn (stad, evenement of cruise schip) zien we het aantal infecties niet hoger gaan dan 10 tot 20%. Daarna stopt de aangroei. Het algemene misverstand is dat er geen enkele immuniteit zou zijn bij dit nieuwe coronavirus. En dat groepsimmuniteit pas bereikt zou zijn bij 60-70% die alleen met een vaccin zou kunnen bereikt worden. 
+Niemand weet het exact. Maar er zijn wel aanwijzingen. Op plekken waar mensen dicht bij elkaar zijn (stad, evenement of cruise schip) zien we het aantal infecties niet hoger gaan dan 10 tot 20%. Daarna stopt de aangroei. Het algemene misverstand is dat er geen enkele immuniteit zou zijn bij dit nieuwe coronavirus. En dat groepsimmuniteit pas bereikt zou zijn als 60-70% gevaccinneerd is. 
 
 ### Geen enkele immuniteit?
 
-Er zijn al vele studies die wijzen op gekruiste immuniteit. Onbesmette mensen bouwden al afweer op tegen het nieuwe coronavirus door eerdere verkoudheden en griepachtige infecties. Naar schatting 50% heeft al kruis-immuniteit [Nguyen-Contant](https://doi.org/10.1101/2020.07.20.213298) /  [Braun](https://doi.org/10.1101/2020.04.17.20061440) / [Grifoni](https://doi.org/10.1016/j.cell.2020.05.015) / [Mateus](https://science.sciencemag.org/content/sci/370/6512/89.full.pdf). [Le Bert](https://www.nature.com/articles/s41586-020-2550-z) spreekt in Nature over _eerdere blootstellingen aan betacoronavirusen die multispecifieke en langdurige T cell immuniteit tegen het structuur N eiwit opleveren_. Ook andere studies wijzen op bestaande immuniteit tegen het SARS-CoV-2 virus [Ng](https://science.sciencemag.org/content/370/6522/1339)/[Sekine](https://doi.org/10.1101/2020.06.29.174888)/[Meckiff](https://dx.doi.org/10.2139/ssrn.3641939)/[Weiskopf](https://doi.org/10.1101/2020.04.11.20062349). Een degelijk onderzoek van Nelde & collega's in Nature Immunology vindt dat [80% van de niet-besmette mensen immuniteit](https://www.nature.com/articles/s41590-020-00808-x) voor het nieuwe coronavirus. Ze vinden ook een verband tussen de hoeveelheid antilichamen en de ernst van de doorgemaakte ziekte. Een mogelijke verklaring waarom mensen met milde of onopgemerkte covid-19 geen antilichamen aanmaken. En toch immuniteit hebben.
+Er zijn al vele studies die wijzen op gekruiste immuniteit. Onbesmette mensen bouwden al afweer op tegen het nieuwe coronavirus door eerdere verkoudheden en griepachtige infecties. Naar schatting 50% heeft al kruis-immuniteit [Nguyen-Contant](https://doi.org/10.1101/2020.07.20.213298) /  [Braun](https://doi.org/10.1101/2020.04.17.20061440) / [Grifoni](https://doi.org/10.1016/j.cell.2020.05.015) / [Mateus](https://science.sciencemag.org/content/sci/370/6512/89.full.pdf). [Le Bert](https://www.nature.com/articles/s41586-020-2550-z) spreekt in Nature over _eerdere blootstellingen aan betacoronavirusen die multispecifieke en langdurige T cell immuniteit tegen het structuur N eiwit opleveren_. Ook andere studies wijzen op bestaande immuniteit tegen het SARS-CoV-2 virus [Loyal](https://www.science.org/doi/10.1126/science.abh1823) / [Ng](https://science.sciencemag.org/content/370/6522/1339) / [Sekine](https://doi.org/10.1101/2020.06.29.174888) / [Meckiff](https://dx.doi.org/10.2139/ssrn.3641939) / [Weiskopf](https://doi.org/10.1101/2020.04.11.20062349). Een degelijk onderzoek van Nelde & collega's in Nature Immunology vindt dat [80% van de niet-besmette mensen immuniteit](https://www.nature.com/articles/s41590-020-00808-x) hebben voor het nieuwe coronavirus. Ze vinden ook een verband tussen de hoeveelheid antilichamen en de ernst van de doorgemaakte ziekte. Een mogelijke verklaring waarom mensen met milde of onopgemerkte covid-19 weinig of geen antilichamen aanmaken. En toch immuniteit kunnen hebben.
 
-Dit is niet zo vreemd aangezien er minstens 4 soorten coronavirussen zijn die griep/verkoudheid veroorzaken. Dit kan ook verklaren waarom 96,6% van de mensen nadat ze positief testen voor het coronavirus weinig ziek zijn of geen klachten doormaken. Dat zijn dan vooral kinderen, jongeren en volwassenen van middelbare leeftijd.
+Dit is niet zo vreemd aangezien er minstens 4 soorten coronavirussen zijn die griep/verkoudheid veroorzaken. Dit kan ook verklaren waarom 98,4% van de mensen nadat ze positief testen voor het coronavirus weinig ziek zijn of geen klachten doormaken. Dat zijn dan vooral kinderen, jongeren en volwassenen van middelbare leeftijd.
 
 Dit wil zeggen dat al die snotneuzen van verkoudheden ons afweersysteem al voorbereidden om COVID-19 te bekampen. Overvloedig noemden media en experts dit een 'nieuw virus'. In werkelijkheid is het een ander type coronavirus is dat zeer sterk gelijkt op de gekende verkoudheids-coronavirussen.  
 
 ### Een poging tot berekening
 
-Als 50 tot 80 % van de bevolking al kruisimmuniteit heeft voor SARS-CoV-2, zijn 20 tot 50% nog vatbaar. We hebben de `r Sero_Prev_BE` % nieuwe immuniteit via antilichamen. Dit plus bestaande kruisimmuniteit geeft ruwweg 65-95% immuniteit. Dat is een percentage dat epidemiologen klassiek nodig achten voor groepsimmuniteit bij een luchtwegenvirus. 
+Als 50 tot 80 % van de bevolking al kruisimmuniteit heeft voor SARS-CoV-2, zijn 20 tot 50% nog vatbaar. We hebben tussen de `r round(infected_current_prop_lower,0) `% en  `r round(infected_current_prop_upper,0)` % Belgen met nieuwe natuurlijke immuniteit. Deze bescherming en de bestaande kruisimmuniteit en bescherming door vaccinatie, geeft ruwweg 71-89 % groepsimmuniteit. Dat is een percentage dat epidemiologen klassiek nodig achten voor groepsimmuniteit bij een luchtwegenvirus. 
 
 Recent stellen [Gabriela Gomes](https://doi.org/10.1101/2020.07.23.20160762) de klassieke gedachte van 70% nodige groepsimmuniteit in vraag. Zij zegt dat infecties niet homogeen verspreiden. Ze verspreiden vooral via kwetsbare mensen die in contact staan met vele anderen. En dus zijn ze sneller immuun. Hierdoor zullen heterogene bevolkingen minder infecties nodig hebben om de groepsimmuniteit te bereiken. Gomes en collega's schatten groepsimmuniteit bij 10 to 20%. Omwille van voorafbestaande immuniteit, deelt [Gupta en collega's](https://doi.org/10.1101/2020.07.15.20154294) ook in een lagere schatting van 10%.
 
-Het is dus aannemelijk dat we nu op die groepsimmuniteit zitten. 
-
-Deze belangrijke onderzoeken staan in top wetenschappelijke tijdschriften als Nature en Science. Toch negeert de mainstream media deze natuurlijke immuniteit  grotendeels. Waarschijnlijk door sensatiezucht, politieke en farmaceutische belangen. Reken dat de farmaceutische industrie met vaccins aan [8,45€](https://www.vrt.be/vrtnws/nl/2020/12/17/prijzen-vaccins/) per stuk in België alleen al 280,000,000 euro binnenhalen. Huisartsen verdienen 10€ per vaccinprik. Het financieel belang is zo extreem groot dat het loont om de bevolking bang te houden met negatieve berichten, lockdowns, mondmaskers, enz.... totdat er een vaccin komt. 
+Deze belangrijke onderzoeken rond kruis-immuniteit staan in top wetenschappelijke tijdschriften zoals Nature en Science. Toch negeert de mainstream media deze vorm van immuniteit  grotendeels. Waarschijnlijk door sensatiezucht, politieke en farmaceutische belangen. Reken dat de farmaceutische industrie met vaccins aan [8,45€](https://www.vrt.be/vrtnws/nl/2020/12/17/prijzen-vaccins/) per stuk in België alleen al 280,000,000 euro binnenhalen. Huisartsen verdienen 10€ per vaccinprik. Het financieel belang is zo extreem groot dat het helaas loont om de bevolking bang te houden met negatieve berichten, lockdowns, mondmaskers, enz.... totdat het vaccin massaal is toegediend. 
 
 Ik haalde veel inspiratie bij onder andere dit artikel [Covid-19: Do many people have pre-existing immunity?](https://www.bmj.com/content/370/bmj.m3563 ) in de British Medical Journal
+
+[Teken de brief die meer aandacht vraagt voor natuurlijke immuniteit](https://frederikfeys.be/natuurlijke-immuniteit/)
 
 ```{r eval=FALSE, include=FALSE}
 # get the cases

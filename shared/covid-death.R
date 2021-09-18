@@ -15,8 +15,14 @@ HLY_limit <- 63.5 #https://ec.europa.eu/eurostat/statistics-explained/index.php/
 d <- read.csv('https://epistat.sciensano.be/Data/COVID19BE_MORT.csv')
 # correct for stable reporting
 d <- d[which(as.Date(d$DATE)  < (Sys.Date()-4)) , ]
+d_2020 <- subset(d, as.Date(d$DATE) < '2021-01-01')
 
 d_agg <- aggregate(x = d$DEATHS, FUN = sum, by = list(agegroup = d$AGEGROUP))
+d_agg_75plus <- d_agg[5,2] + d_agg[6,2]
+prop_75plus <- round(d_agg_75plus / sum(d_agg[,2]),3)
+d_agg_2020 <- aggregate(x = d_2020$DEATHS, FUN = sum, by = list(agegroup = d_2020$AGEGROUP))
+
+deaths_2020 <- sum(d_agg_2020$x)
 
 median_ages <- c(12, 35, 55, 70, 80, 85)
 YLL_ages <- c(69.71, 47.17, 28.40, 16.08, 9.21, 6.39)

@@ -1,49 +1,95 @@
 ---
 title: "Waar is het killervirus?"
 author: "FF"
-date: "7/22/2020"
+date: "7/9/2021"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = T, warning = FALSE, message = FALSE)
+source(file = "shared/covid-death.R")
 ```
 
 # Zweden
 
-De meesten beschouwen de Zweedse aanpak van de coronacrisis onverantwoord. Ze zou onschuldige mensen de dood indrijven. Zijn er in 2020 dan veel meer doden gevallen dan in andere jaren? Deze grafiek toont de gegevens tussen november en mei Er zijn evenveel of zelfs minder doden gevallen tijdens de Zweedse coronacrisis.
+De meesten beschouwen de Zweedse aanpak van de coronacrisis onverantwoord. Ze zou onschuldige mensen de dood indrijven. Zijn er in 2020 dan veel meer doden gevallen dan in andere jaren? Deze grafiek toont dat de epidemie de dalende trend stopte. Maar in historisch perspectief is er geen sprake van massale sterfte.
 
 
 ![](img/EdZnH_mXYAMwswX.jpg)
 
 # België
 
-De reactie van de Belgische overheid vinden de meesten dan weer wél verantwoord. De bevolking moest onder huisarrest. En de overheid blijft tot op vandaag (juli 2020) maatregelen uitvaardigen die de persoonlijke vrijheden aantasten. 
+De radicale reactie van de Belgische overheid vinden de meesten dan weer wél verantwoord. De bevolking moest onder huisarrest. En de overheid blijft tot op vandaag maatregelen uitvaardigen die de persoonlijke vrijheden aantasten. 
 
 ## Een kleine quiz
 
 We doen dezelfde berekening voor België. Cijfers van [STATBel](https://statbel.fgov.be/en/open-data/number-deaths-day-sex-district-age).  Welk nummer onder de staaf is het aantal doden in 2020? 
-```{r echo=F}
-d <- read.delim('data/agg_data.csv', sep = ";")
-d <- d[order(d$nr),]   
+
+```{r echo=FALSE}
+d <- read.csv('data/deaths_by_year.csv')
+d_pop <- read.csv('data/population_by_year.csv', sep = ';')
+
+# convert factor to numeric
+d_pop$year <- as.numeric(as.character(d_pop$year))
+
+#strip year 1991
+d <- subset(d, year!=1990)
+
+library(plyr)
+d<- join(d, d_pop, by = "year")
+d['d_1k'] <- round(d$deaths / d$population * 1000, 2)
+d['d_1k_covid'] <- 0
+d$d_1k_covid[d$year==2020] <- round(deaths_2020 / d$population * 1000, 2)
+
+# assign random numbers for quizz
+
+# Randomize the order of the data frame
+d <- d[sample(1:nrow(d)), ]
+
+for (i in 1:nrow(d)) {
+  d[i, 'nr'] <- i
+}
 
 cols = "cornflowerblue"
 
-barplot(d$cum_deaths_100k, names.arg = d$nr, main = "België: overzicht sterftecijfers (alle oorzaken) afgelopen 12 jaar 
-        periode Januari tot Juni", xlab = "Jaar Januari / Jaar Juni", ylab="Overlijdens per 100,000", space=0.5, ylim=c(0, 650) , col = cols, border = NA, cex.names=1)
+barplot(d$d_1k, names.arg = d$nr, main = "België: overzicht sterftecijfers (alle oorzaken) afgelopen 12 jaar", xlab = "Jaar Nr", ylab="Overlijdens per 1000 personen", space=0.5, ylim=c(0, 12) , col = cols, border = NA, cex.names=1)
 ```
 
-Nummer 10? Goed zo! Dat zijn de cijfers voor 2020. Laten we dit even mooier presenteren.
+```{r include=FALSE}
+correct_nr <- d$nr[d$year==2020]
+```
+
+
+Nummer `r correct_nr`? Goed zo! Dat zijn de cijfers voor 2020. Laten we dit even mooier presenteren.
 
 ```{r echo=F}
 
 attach(d)
-d <-d[ order(year),] 
+d <-d[ order(year),]
 
 cols <- ifelse(d$year == 2020, "chocolate1","cornflowerblue")
-barplot(d$cum_deaths_100k, names.arg = d$year, main = "België: overzicht sterftecijfers (alle oorzaken) afgelopen 12 jaar 
-        periode Januari tot Juni", xlab = "Jaar Januari / Jaar Juni", ylab="Overlijdens per 100,000", space=0.5, ylim=c(0, 650) , col = cols, border = NA, cex.names=0.6)
+barplot(d$d_1k, names.arg = d$year, main = "België: overzicht sterftecijfers (alle oorzaken) afgelopen 12 jaar", xlab = "Jaar", ylab="Overlijdens per 1000", space=0.5, ylim=c(0, 12) , col = cols, border = NA, cex.names=0.6)
+
+
 ```
 
-Het totaal aantal overlijdens is ongeveer hetzelfde doorheen de jaren, met misschien een zeer lichte stijging in 2020. 
+```{r include=FALSE}
+years <- nrow(d)
 
+#avg all years before 2020
+d_before <- subset(d, year!=2020)
+avg_before <- mean(d_before$d_1k)
+abs_dif <- round(d$d_1k[d$year==2020] - avg_before , 2)
+trend <- round (((d$d_1k[d$year==2020] - avg_before) / avg_before ) *100, 1)
+```
+
+
+Als we de afgelopen `r years` jaar beschouden, dan is het aantal overlijdens in 2020 gestegen met `r abs_dif` per 1,000 personen (+ `r trend ` %) ten opzichte van het gemiddelde over de afgelopen `r years` jaar. De vraag is nu: hoe komt het dat in zweden er geen stijging is tov het gemiddelde, en wel in België? Gegeven dat:
+
+- Het gaat om hetzelfde virus. 
+- De bevolking heeft een gelijkaardig:
+
+  - aantal oude (vatbare) mensen
+  - dichtheid van wonen (urbanisatiegraad).
+  
+Dit vraagt om verder onderzoek. Er is iets anders gaande. 

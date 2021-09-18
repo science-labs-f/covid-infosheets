@@ -83,7 +83,7 @@ library(ggplot2)
 library(viridis)
 
 # create dataset
-d_all_cause <- read.csv("data/all_cause_death_byage.csv")
+d_all_cause <- read.csv("data/all_cause_death_by_age.csv")
 d_all_cause$death_cause <- "Alle oorzaken"
 d_all_cause$X <- NULL
 # rename x column to value

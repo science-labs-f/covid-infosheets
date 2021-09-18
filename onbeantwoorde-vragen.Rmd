@@ -1,0 +1,12 @@
+---
+title: "Onbeantwoorde vragen"
+author: "FF"
+date: "1/8/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+* Hoeveel mensen kozen liever thuis te sterven tijdens de coronacrisis, danwel in eenzaamheid in een ziekenhuis? 

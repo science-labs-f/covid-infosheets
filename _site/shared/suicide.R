@@ -36,7 +36,7 @@ DW_suicatt = 0.46
 YLD_suicatt_impact <-   ceiling( (suicatt * DW_suicatt ) - (suicatt_2018_corr*DW_suicatt) )
 
 # estimated suicide 
-suic_2017 = 1723 
+suic_2017 = 1792 # 2018 https://statbel.fgov.be/sites/default/files/files/documents/bevolking/5.4%20Sterfte%2C%20levensverwachting%20en%20doodsoorzaken/5.4.4%20Doodsoorzaken/BE_COD_2017_NL_v2.xls
 suic_2017_corr = round( suic_2017 / 12 * months_surveyed, 0)
 suic_2017_corr_rel <- round( suic_2017_corr / population_be * 100, 3)
 suicatt_with_death_ratio <- round(suic_2017/suicatt_2018*100, 1)
