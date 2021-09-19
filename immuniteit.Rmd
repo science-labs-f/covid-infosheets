@@ -1,5 +1,5 @@
 ---
-title: "Immuniteitsgraad"
+title: "Hoe is de immuniteitsgraad in Brussel en Wallonië ten opzichte van Vlaanderen ?"
 author: "FF"
 date: "17/9/2021"
 output: 
@@ -57,12 +57,11 @@ d_p_vuln <- subset(d_p_vuln, select = -c(CD_REFNIS))
 
 ```
 
-
 ## Samenvatting
 
-- Als we kijken naar alle immuniteit in België voor het nieuwe coronavirus, dan lijkt er geen verschil in groepsimmuniteit-bescherming tussen Brussel, Vlaanderen en Wallonië.
+- Als we kijken naar alle immuniteit in België voor het nieuwe coronavirus, dan lijkt er geen verschil in groepsimmuniteit-bescherming tussen Brussel, Vlaanderen en Wallonië. De groeps-immuniteit is algemeen hoog. 
 
-- De kwetsbare bevolking is in België goed gevaccineerd. 
+- De kwetsbare bevolking in België is goed gevaccineerd. 
 
 Na het zien van [deze Tweet van Tom Van de Weghe](https://twitter.com/tomvandeweghe/status/1435559870896513030?s=20) en de bijbehorende map der vaccinatie, vond ik mijn inspiratie voor dit blog. Wat als we neutraal kijken naar de data? En naar *alle* immuniteit in de bevolking? 
 
@@ -268,7 +267,7 @@ Per regio:
 
 Ik schat dat in werkelijkheid bij `r mean_sp` % van de Belgische bevolking er natuurlijk verworven immuniteit is voor het nieuwe coronavirus. En dit varieert afhankelijk van de locatie tussen minimaal `r min_sp` % en maximaal `r max_sp` %.
 
-Deze kaart biedt een overzicht gecorrigeerd per regio. Klik op de afbeelding als je een interactieve kaart per gemeente wil zien.
+Deze kaart biedt een overzicht gecorrigeerd per regio. Klik op de afbeelding als je een interactieve kaart per gemeente wil zien. (! het laden van de kaart duurt even)
 
 <a href="plots/immuniteit-p1.html" target="_blank">
   <img src="img/nat-im.png"/>
@@ -355,7 +354,7 @@ Je ziet op de kaart dat vooral Brussel en Wallonië een hogere graad van natuurl
 
 De overgrote meerderheid van risico ligt bij de oudere bevolking, hier alle mensen ouder dan `r tresh_vuln_age`. 
 
-Klik op de afbeelding als je een interactieve kaart per gemeente wil zien.
+Klik op de afbeelding als je een interactieve kaart per gemeente wil zien. (! het laden van de kaart duurt even)
 
 <a href="plots/immuniteit-p2.html" target="_blank">
   <img src="img/vax-im-vuln.png"/>
@@ -363,13 +362,13 @@ Klik op de afbeelding als je een interactieve kaart per gemeente wil zien.
 
 ### Volwassen bevolking
 
-Klik op de afbeelding als je een interactieve kaart per gemeente wil zien.
+Klik op de afbeelding als je een interactieve kaart per gemeente wil zien. (! het laden van de kaart duurt even)
 
 <a href="plots/immuniteit-p3.html" target="_blank">
   <img src="img/vax-im-all.png"/>
 </a>
 
-**Je ziet dat Wallonië en Brussel een lagere vaccinatiegraad hebben. Als je hun kunstmatige immuniteit samenvoegt met hun verhoogde natuurlijke immuniteit, is bewering dat er in Brussel en Wallonië een probleem is, of dat het land niet veilig open kan -door hen-, niet geloofwaardig.**
+**Je ziet dat Wallonië en Brussel een lagere vaccinatiegraad heeft. Anderzijds hebben ze hebben een hogere natuurlijke immuniteit. Als je hun lagere kunstmatige immuniteit samenvoegt met hun hogere natuurlijke immuniteit, is bewering dat er in Brussel en Wallonië een probleem is ten opzichte van Vlaanderen, of dat het land niet veilig open kan -door hen-, niet geloofwaardig. Heel België heeft een gelijkaardige, hoge immuniteitsgraad**
 
 
 
