@@ -59,35 +59,37 @@ d_p_vuln <- subset(d_p_vuln, select = -c(CD_REFNIS))
 
 ## Samenvatting
 
-- Als we kijken naar alle immuniteit in België voor het nieuwe coronavirus, dan lijkt er geen verschil in groepsimmuniteit-bescherming tussen Brussel, Vlaanderen en Wallonië. De groeps-immuniteit is algemeen hoog. 
+-   Als we kijken naar alle immuniteit in België voor het nieuwe coronavirus, dan lijkt er geen verschil in groepsimmuniteit-bescherming tussen Brussel, Vlaanderen en Wallonië. De groeps-immuniteit is algemeen hoog.
 
-- De kwetsbare bevolking in België is goed gevaccineerd. 
+-   De kwetsbare bevolking in België is goed gevaccineerd.
 
-Na het zien van [deze Tweet van Tom Van de Weghe](https://twitter.com/tomvandeweghe/status/1435559870896513030?s=20) en de bijbehorende map der vaccinatie, vond ik mijn inspiratie voor dit blog. Wat als we neutraal kijken naar de data? En naar *alle* immuniteit in de bevolking? 
+Na het zien van [deze Tweet van Tom Van de Weghe](https://twitter.com/tomvandeweghe/status/1435559870896513030?s=20) en de bijbehorende map der vaccinatie, vond ik mijn inspiratie voor dit blog. Wat als we neutraal kijken naar de data? En naar *alle* immuniteit in de bevolking?
 
 ![Polariserende grafiek in De Morgen](~/Documents/wetenschap/covid-19/infosheets/img/tomvdw-polariserende-vaccinatiemap.jpg)
 
-Covid-immuniteit kan ontstaan na een doorgemaakte corona-infectie of door vaccinatie. [Recent studiewerk van Gazit](https://doi.org/10.1101/2021.08.24.21262415) toont dat natuurlijke immuniteit tot 27 keer meer bescherming biedt tegen covid dan vaccinatie met het Pfizer-vaccin. Dit is geen verrassing want natuurlijke immuniteit na een infectie is breder doordat de hele virus-molecule als lichaamsvreemde wordt beschouwd. En op die manier betere en langdurige immuniteit biedt. Dankzij 'geheugen' B en T-cellen zelfs tot decennia na de besmetting. Het vaccin biedt ook bescherming, maar beperkter. Het m-RNA vaccin is bevat meer één deel van het hele virus, het zogenaamde 'spike-eiwit'.
+Covid-immuniteit kan ontstaan na een doorgemaakte corona-infectie of door vaccinatie. [Recent studiewerk van Gazit](https://doi.org/10.1101/2021.08.24.21262415) toont dat natuurlijke immuniteit tot 27 keer meer bescherming biedt tegen covid dan vaccinatie met het Pfizer-vaccin. Dit is geen verrassing want natuurlijke immuniteit na een infectie is breder. Dat komt doordat ons lichaam de gehele virus-molecule als lichaamsvreemde beschouwt. Het m-RNA vaccin bevat meer één deel van het hele virus, het zogenaamde 'spike-eiwit'. Het vaccin biedt zo ook bescherming, maar beperkt. Bij natuurlijke immuniteit is de bescherming krachtiger en duurt ze langer. Na een doorlopen infectie, maakt het afweersysteem 'geheugen' B en T-cellen aan die nadien jarenlang antilichamen aanmaken.
 
-Recent is er ophef omdat de vaccinatiegraad in Brussel te laag zou zijn om veilig verder te kunnen. De [Brusselse regering besliste](https://www.knack.be/nieuws/belgie/brusselse-regering-start-voorbereiding-uitbreiding-covid-safe-ticket-vanaf-1-oktober/article-news-1776319.html) om vanaf 1 oktober een coronapas (covid safe ticket) in te voeren. De overheid wil mensen die nog geen vaccinatie wensten, de deelname in het openbaar leven moeilijk maken, in de hoop dat ze toch een prik laten zetten. Ook in Vlaanderen flirt de overheid met det idee iedereen te dwingen om te vaccineren.
+Recent is er ophef omdat de vaccinatiegraad in Brussel te laag zou zijn om veilig verder te kunnen. De [Brusselse regering besliste](https://www.knack.be/nieuws/belgie/brusselse-regering-start-voorbereiding-uitbreiding-covid-safe-ticket-vanaf-1-oktober/article-news-1776319.html) om vanaf 1 oktober een coronapas (covid safe ticket) in te voeren. De overheid wil mensen die nog geen vaccinatie wensten, de deelname in het openbaar leven moeilijk maken, in de hoop dat ze toch een prik laten zetten. Ook in Vlaanderen flirt de overheid met het idee iedereen te dwingen om te vaccineren.
 
-Op welke feiten zijn deze maatregelen gebouwd: 
+Op welke feiten zijn deze maatregelen gebouwd:
 
 -   hoe is de immuniteit in Brussel, Wallonië en Vlaanderen ?
 -   hoe is de immuniteit bij kwetsbare mensen ?
 
 ## Aanpak
 
-+ [Sciensano publiceert](https://epistat.wiv-isp.be/covid/) gegevens over infectie per gemeente, maar niet volgens per gemeente en leeftijd. Ik maak dus een overzicht per gemeente voor alle leeftijden. 
-+ De officiële besmetting-cijfers zijn een onderschatting van het echte aantal besmettingen. Om een idee te krijgen over deze onderschatting, zal ik de data uit bloedonderzoek naar antilichamen van Belgische bloed-donoren verwerken. Drie onderzoeken met telkens minstens 6 weken tussentijd komen in aanmerking (datum 2020-09-30, 2020-11-11, en 2020-12-22). 
+-   [Sciensano publiceert](https://epistat.wiv-isp.be/covid/) gegevens over infectie per gemeente, maar niet volgens per gemeente en leeftijd. Ik maak dus een overzicht per gemeente voor alle leeftijden.
 
-+ Er zijn [per regio aanzienlijke verschillen in het voorkomen van antilichamen](https://www.sciensano.be/nl/pershoek/aantal-bloeddonoren-en-gezondheidswerkers-met-antistoffen-tegen-coronavirus-stijgt). Deze analyse zal dit feit meenemen. 
+-   De officiële besmetting-cijfers zijn een onderschatting van het echte aantal besmettingen. Om een idee te krijgen over deze onderschatting, zal ik de data uit bloedonderzoek naar antilichamen van Belgische bloed-donoren verwerken. Drie onderzoeken met telkens minstens 6 weken tussentijd komen in aanmerking (datum 2020-09-30, 2020-11-11, en 2020-12-22).
 
-+ De seroprevalentie bij bloeddonoren kan op zich ook een onderschatting zijn, omdat bloeddonoren vaak gezondere en hoger opgeleide mensen zijn. Ze zijn minder onderhevig aan infectie door krap-bemeten ruimtes, waar soms meerdere generaties onder één dak leven, die zo uiteraard de virusverspreiding versterken.
+-   Er zijn [per regio aanzienlijke verschillen in het voorkomen van antilichamen](https://www.sciensano.be/nl/pershoek/aantal-bloeddonoren-en-gezondheidswerkers-met-antistoffen-tegen-coronavirus-stijgt). Deze analyse zal dit feit meenemen.
 
-+ Immuniteit door vaccinatie: 
-    + samenvoegen van de vaccinaties waar één dosis volstaat en alle vaccinaties waar al minstens 1 dosis werd toegediend (dit laatste geeft ook idee van de vaccinatie-bereidheid). 
-    + ik beschouw enkel de volwassen bevolking. Voor kinderen en jongeren wegen voordelen van vaccinatie niet op tegen de nadelen. Lees [hier](https://twitter.com/FFeys/status/1434235922430758915?s=20) meer.
+-   De seroprevalentie bij bloeddonoren kan op zich ook een onderschatting zijn, omdat bloeddonoren vaak gezondere en hoger opgeleide mensen zijn. Ze zijn minder onderhevig aan infectie door krap-bemeten ruimtes, waar soms meerdere generaties onder één dak leven, die zo uiteraard de verspreiding van het virus versterken.
+
+-   Immuniteit door vaccinatie:
+
+    -   samenvoegen van de vaccinaties waar één dosis volstaat en alle vaccinaties waar al minstens 1 dosis werd toegediend (dit laatste geeft ook idee van de vaccinatie-bereidheid).
+    -   ik beschouw enkel de volwassen bevolking. Voor kinderen en jongeren wegen voordelen van vaccinatie niet op tegen de nadelen. Lees [hier](https://twitter.com/FFeys/status/1434235922430758915?s=20) meer.
 
 ## Immuniteit door corona-infectie
 
@@ -176,7 +178,7 @@ Op basis van de officiële tests, heeft Vlaanderen de minste, en Brussel en Wall
 
 ### Best mogelijke schatting
 
-De overgrote meerderheid van de besmettingen komt echter niet voor in de statistieken van het aantal bevestigde gevallen. Dat komt omdat die niet-vastgestelde besmettingen vaak mild of zonder klachten verlopen. Ze maken dat de werkelijke immuniteit onder de bevolking dus (veel) hoger is. Bloedonderzoek naar antilichamen geeft een idee van de werkelijke immuniteit. 
+De overgrote meerderheid van de besmettingen komt echter niet voor in de statistieken van het aantal bevestigde gevallen. Dat komt omdat die niet-vastgestelde besmettingen vaak mild of zonder klachten verlopen. Ze maken dat de werkelijke immuniteit onder de bevolking dus (veel) hoger is. Bloedonderzoek naar antilichamen geeft een idee van de werkelijke immuniteit.
 
 Zo zien we medio november 2020 per regio deze resultaten:
 
@@ -257,22 +259,19 @@ saveWidget(g_n, "~/Documents/wetenschap/covid-19/infosheets/plots/immuniteit-p1.
 
 ```
 
-Op basis van de drie meet-momenten bij bloed-donoren, is er over heel België `r mean_uf` keer meer natuurlijke immuniteit dan wat de besmettingen-cijfers suggereren. 
+Op basis van de drie meet-momenten bij bloed-donoren, is er over heel België `r mean_uf` keer meer natuurlijke immuniteit dan wat de besmettingen-cijfers suggereren.
 
 Per regio:
 
-+ In Vlaanderen `r uf_fl` keer hoger 
-+ In Brussel `r uf_br` keer hoger 
-+ In Wallonië `r uf_wa` keer hoger
+-   In Vlaanderen `r uf_fl` keer hoger
+-   In Brussel `r uf_br` keer hoger
+-   In Wallonië `r uf_wa` keer hoger
 
 Ik schat dat in werkelijkheid bij `r mean_sp` % van de Belgische bevolking er natuurlijk verworven immuniteit is voor het nieuwe coronavirus. En dit varieert afhankelijk van de locatie tussen minimaal `r min_sp` % en maximaal `r max_sp` %.
 
 Deze kaart biedt een overzicht gecorrigeerd per regio. Klik op de afbeelding als je een interactieve kaart per gemeente wil zien. (! het laden van de kaart duurt even)
 
-<a href="plots/immuniteit-p1.html" target="_blank">
-  <img src="img/nat-im.png"/>
-</a>
-
+<a href="plots/immuniteit-p1.html" target="_blank"> <img src="img/nat-im.png"/> </a>
 
 ```{r vuln_nat_imm, eval=FALSE, include=FALSE}
 # TODO: ### Kwetsbare bevolking
@@ -281,7 +280,6 @@ if (update) {
   d_c <- read_csv('https://epistat.sciensano.be/Data/COVID19BE_CASES_AGESEX.csv') }
 # 90+, 80-89, 70-79
 ```
-
 
 ```{r vaccination}
 # vaccination data
@@ -346,29 +344,22 @@ saveWidget(g_v_all, "~/Documents/wetenschap/covid-19/infosheets/plots/immuniteit
 
 ```
 
-Je ziet op de kaart dat vooral Brussel en Wallonië een hogere graad van natuurlijke immuniteit hebben. 
+Je ziet op de kaart dat vooral Brussel en Wallonië een hogere graad van natuurlijke immuniteit hebben.
 
 ## Immuniteit door vaccinatie
 
 ### Kwetsbare bevolking
 
-De overgrote meerderheid van risico ligt bij de oudere bevolking, hier alle mensen ouder dan `r tresh_vuln_age`. 
+De overgrote meerderheid van risico ligt bij de oudere bevolking, hier alle mensen ouder dan `r tresh_vuln_age`.
 
 Klik op de afbeelding als je een interactieve kaart per gemeente wil zien. (! het laden van de kaart duurt even)
 
-<a href="plots/immuniteit-p2.html" target="_blank">
-  <img src="img/vax-im-vuln.png"/>
-</a>
+<a href="plots/immuniteit-p2.html" target="_blank"> <img src="img/vax-im-vuln.png"/> </a>
 
 ### Volwassen bevolking
 
 Klik op de afbeelding als je een interactieve kaart per gemeente wil zien. (! het laden van de kaart duurt even)
 
-<a href="plots/immuniteit-p3.html" target="_blank">
-  <img src="img/vax-im-all.png"/>
-</a>
+<a href="plots/immuniteit-p3.html" target="_blank"> <img src="img/vax-im-all.png"/> </a>
 
 **Je ziet dat Wallonië en Brussel een lagere vaccinatiegraad heeft. Anderzijds hebben ze hebben een hogere natuurlijke immuniteit. Als je hun lagere kunstmatige immuniteit samenvoegt met hun hogere natuurlijke immuniteit, is bewering dat er in Brussel en Wallonië een probleem is ten opzichte van Vlaanderen, of dat het land niet veilig open kan -door hen-, niet geloofwaardig. Heel België heeft een gelijkaardige, hoge immuniteitsgraad**
-
-
-
