@@ -1,0 +1,137 @@
+---
+title: Mondmaskers tegen de verspreiding van corona-besmettingen.
+
+author: "FF"
+date: "9/10/2021"
+output: 
+  html_document:
+    toc: yes
+---
+
+```{r setup, include=F}
+knitr::opts_chunk$set(echo=FALSE, warning=F)
+library(dplyr)
+library(car) # includes the Levine's test
+library(ggplot2)
+library(qqplotr)
+```
+
+Op 1 oktober 2021 schafte de overheid de verplichte mondmaskers af. Ze gelden enkel nog op de trein/bus en bij contact-beroepen (tandarts, kapper,...). Als mondmaskers (corona-)besmettingen tegenhouden, dan verwachten we dat het aandeel coronabesmettingen toeneemt. 
+
+Laten we de week voor 1 oktober vergelijken met de week vanaf de afschaffing. 
+```{r prepare-data}
+#prepare the data
+
+consolidate_days = 0
+number_days_analyse = 14
+rate_per= 100000
+
+d_t <- read.csv('https://epistat.sciensano.be/Data/COVID19BE_tests.csv')
+d_t['date'] = as.Date(d_t$DATE)
+d_t_a <-aggregate(cbind(TESTS_ALL, TESTS_ALL_POS) ~ date , data= d_t, FUN=sum)
+d_t_a['pos.ratio'] <- d_t_a$TESTS_ALL_POS / d_t_a$TESTS_ALL
+
+#remove last case (not correct) & all prior to 14 days
+min_date <- '2021-09-23'
+max_date <- max(d_t_a$date)
+d_t_p <- subset(d_t_a, d_t_a$date < max_date & d_t_a$date > min_date)
+
+# assign groups
+d_t_p['group'] <- 'masks'
+d_t_p$group[d_t_p$date >= '2021-10-01'] <- 'no masks'
+# designate group as factor
+d_t_p$group<-as.factor(d_t_p$group)
+
+d <-d_t_p
+```
+
+## Geldigheid van de analyse
+
+### Zijn de beide groepen normaal verdeeld?
+
+```{r analyse}
+# Independent Samples t-test ->good reference atricle: # https://stat-methods.com/home/independent-samples-t-test-r-2/
+
+#Perform the Shapiro-Wilk Test for Normality on each group
+d %>%
+  group_by(group) %>%
+  summarise(`W Statistic`= shapiro.test(pos.ratio)$statistic,
+            `p-value`= shapiro.test(pos.ratio)$p.value)
+
+#Perform QQ plots by group
+ggplot(data = d, mapping = aes(sample = pos.ratio, color = group, fill = group))+
+  stat_qq_band(alpha=0.5, conf = 0.95, qtype = 1, bandType = 'ts')+
+  stat_qq_line(identity = T)+
+  stat_qq_point(col='black')+
+  facet_wrap(~group, scales = 'free')+
+  labs(x="Theoretical Quantiles", y= "Sample Quantiles") + theme_bw()
+
+```
+
+### Is de variatie in de beide groepen gelijkaardig?
+
+``` {r Levine}
+
+#Perform Levene's Test of Equality of Variances
+lev1 <- leveneTest(pos.ratio ~ group, data=d, center='mean')
+lev2 <- leveneTest(pos.ratio ~ group, data=d, center='median')
+print(lev1)
+print(lev2)
+
+```
+
+### Zijn er afwijkende waarden en hoe is de spreiding?
+
+```{r Boxplots}
+
+#Produce boxplots and visually check for outliers
+ggplot(d, aes(x=group, y=pos.ratio, fill=group))+
+  stat_boxplot(geom = 'errorbar', width=0.5)+
+  geom_boxplot(fill='light blue')+
+  stat_summary(fun.y = mean, geom='point', shape=10, size=3.5, color='black')+
+  ggtitle("Boxplots of Masks and No Masks Groups")+
+  theme_bw()+
+  theme(legend.position = "none")
+
+```
+
+### Beschrijving van de gegevens
+
+```{r }
+
+#Produce descriptive statistics by group
+d %>% select(pos.ratio, group) %>% group_by(group) %>%
+  summarise(n=n(),
+            mean = mean(pos.ratio),
+            sd = sd(pos.ratio),
+            stderr = sd/sqrt(n),
+            LCL = mean - qt(1 - (0.05 / 2), n - 1) * stderr,
+            UCL = mean + qt(1 - (0.05 / 2), n - 1) * stderr,
+            median= median(pos.ratio),
+            min=min(pos.ratio),
+            max=max(pos.ratio),
+            IQR=IQR(pos.ratio))
+
+```
+
+## Resultaten
+
+```{r Test}
+
+#Perform an Independent Samples T-test, with equal variance
+m1 <- t.test(pos.ratio ~ group, data = d, var.equal=T)
+print(m1)
+
+```
+
+## Conclusie
+
+Er is geen bewijs dat het verplicht dragen van een masker een effect heeft op het aandeel corona-besmettingen. Althans tijdens een periode met normale viruscirculatie.
+
+Dit is gelijkaardig aan de bevindingen uit het degelijk onderzoek van [Bundgaard en collega's](https://www.acpjournals.org/doi/10.7326/M20-6817) en de grondige overzichtsanalyse van [Xiao en collega's](https://pubmed.ncbi.nlm.nih.gov/32027586/). Ik vond geen degelijke studies die wél een effect tonen. 
+
+Kritische bedenkingen:
+
++ Zijn de twee opeenvolgende weken goed vergelijkbaar? Waren er misschien andere factoren die de ene week wel / de andere week geen effect hadden op de besmettingen?
+
++ Deze analyse kan enkel een uitspraak doen over de epidemische situatie zoals eind september-begin oktober 2021 of periodes met een gelijkaardige aandeel positieve tests. Het is dus mogelijk dat in periodes met hoge besmettingpieken mondmaskers wel een gunstig effect hebben. 

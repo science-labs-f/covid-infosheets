@@ -4,6 +4,10 @@ title: "Infobladen"
 
 > De toekomst verplettert alle voorspellingen
 
+[Mondmaskers tegen de verspreiding van corona-besmettingen](mondmaskers-besmettingen.html) (9/10/2021)
+
+[Wat zijn de prioriteiten bij het beschermen van de volksgezondheid?](post-5-prioriteiten-volksgezondheid.html) (*update 6/10/2021*) 
+
 [Welke immuniteit heeft de Belgische bevolking (part 2)?](immuniteit.html) (17/9/2021)
 
 ['Killervirus' ?, vooral in België... ](post-1-killervirus.html) (*update 10/9/2021*)
@@ -28,7 +32,5 @@ title: "Infobladen"
 [Kunnen we COVID-19 doen verdwijnen? Een blik vanuit Zweden.](post-6-covid-verdwijnen.html) (*update 24/9/2020*)
 
 [Psychologie van de grafiek](post-8-psychologie-statistiek.html)
-
-[Wat zijn de prioriteiten bij het beschermen van de volksgezondheid?](post-5-prioriteiten-volksgezondheid.html) 
 
 [Op bewijs of op angst gebaseerde maatregelen?](post-4-angst-bewijs-maatregelen.html)
