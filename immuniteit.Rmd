@@ -10,7 +10,8 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = F)
 
-update <- FALSE # set to TRUE to get latest live data
+today <- format(Sys.time(), "%d/%m/%Y")
+update <- F # set to TRUE to get latest live data
 tresh_vuln_age <- 75
 caption <- "Made by: @FFeys / Data: Sciensano, BelSTAT" # ggplot credidentials displayed on mappings 
 
@@ -67,9 +68,9 @@ Na het zien van [deze Tweet van Tom Van de Weghe](https://twitter.com/tomvandewe
 
 ![Polariserende grafiek in De Morgen](~/Documents/wetenschap/covid-19/infosheets/img/tomvdw-polariserende-vaccinatiemap.jpg)
 
-Covid-immuniteit kan ontstaan na een doorgemaakte corona-infectie of door vaccinatie. [Recent studiewerk van Gazit](https://doi.org/10.1101/2021.08.24.21262415) toont dat natuurlijke immuniteit tot 27 keer meer bescherming biedt tegen covid dan vaccinatie met het Pfizer-vaccin. Dit is geen verrassing want natuurlijke immuniteit na een infectie is breder. Dat komt doordat ons lichaam de gehele virus-molecule als lichaamsvreemde beschouwt. Het m-RNA vaccin bevat meer één deel van het hele virus, het zogenaamde 'spike-eiwit'. Het vaccin biedt zo ook bescherming, maar beperkt. Bij natuurlijke immuniteit is de bescherming krachtiger en duurt ze langer. Na een doorlopen infectie, maakt het afweersysteem 'geheugen' B en T-cellen aan die nadien jarenlang antilichamen aanmaken.
+Covid-immuniteit kan ontstaan na een doorgemaakte corona-infectie of door vaccinatie. [Recent studiewerk van Gazit](https://doi.org/10.1101/2021.08.24.21262415) toont dat natuurlijke immuniteit tot 27 keer meer bescherming biedt tegen covid dan vaccinatie met het Pfizer-vaccin. Dit is geen verrassing want natuurlijke immuniteit na een infectie is breder. Dat komt doordat ons lichaam de gehele virus-molecule als lichaamsvreemde beschouwt. Het m-RNA vaccin bevat meer één deel van het hele virus, het zogenaamde 'spike-eiwit'. Het vaccin biedt zo ook bescherming, maar beperkt en kortdurender. Bij natuurlijke immuniteit is de bescherming krachtiger en duurt ze langer. Na een doorlopen infectie, maakt het afweersysteem 'geheugen' B en T-cellen aan die nadien jarenlang antilichamen aanmaken. Dat komt van pas bij een nieuwe infectie.
 
-Recent is er ophef omdat de vaccinatiegraad in Brussel te laag zou zijn om veilig verder te kunnen. De [Brusselse regering besliste](https://www.knack.be/nieuws/belgie/brusselse-regering-start-voorbereiding-uitbreiding-covid-safe-ticket-vanaf-1-oktober/article-news-1776319.html) om vanaf 1 oktober een coronapas (covid safe ticket) in te voeren. De overheid wil mensen die nog geen vaccinatie wensten, de deelname in het openbaar leven moeilijk maken, in de hoop dat ze toch een prik laten zetten. Ook in Vlaanderen flirt de overheid met het idee iedereen te dwingen om te vaccineren.
+Er is ophef omdat de vaccinatiegraad in Brussel te laag zou zijn om veilig verder te kunnen. De [Brusselse regering besliste](https://www.knack.be/nieuws/belgie/brusselse-regering-start-voorbereiding-uitbreiding-covid-safe-ticket-vanaf-1-oktober/article-news-1776319.html) om vanaf 1 oktober een coronapas (covid safe ticket) in te voeren. De overheid wil mensen die nog geen vaccinatie wensten, de deelname in het openbaar leven moeilijk maken, in de hoop dat ze zo toch een prik laten zetten. Ook voor Vlaanderen en Wallonië besliste de Regering De Croo vanaf 1 november 2021 om met een coronapas de resterende 1,350,000 niet-gevaccineerde volwassen Belgen te dwingen tot vaccinatie.
 
 Op welke feiten zijn deze maatregelen gebouwd:
 
@@ -101,6 +102,7 @@ d_n_raw <- read.csv('~/Documents/wetenschap/covid-19/infosheets/data/COVID19BE_C
 
 if (update) {
   d_n_raw <- read.csv('https://epistat.sciensano.be/Data/COVID19BE_CASES_MUNI_CUM.csv')
+  write.csv(d_n_raw, file = 'data/COVID19BE_CASES_MUNI_CUM.csv', row.names = F, sep = ",")
 }
 
 # complete cases
@@ -112,12 +114,18 @@ d_n <- subset(d_n, select = -c(TX_DESCR_NL))
 d_n <- left_join(d_n, d_p_all, by = 'NIS5')
 d_n$rate <- round(d_n$CASES/d_n$MS_POPULATION*100, 1)
 
+# data From Robby.DePauw@sciensano.be:
+# 21/12/2021 binnen de regio's was:
+# * Brussel: 22.7%
+# * Vlaanderen: 11.7%
+# * Wallonië: 24.4%
+
 # seroprevalence estimates
 d_sp_studies <- data.frame(Date = c('2020-09-30', '2020-11-11', '2020-12-22'), 
                            Mean_sp = c(0.048, 0.136, 0.196),
-                           Flanders = c(NA, 0.10, NA),
-                           Brussels = c(NA, 0.26, NA),
-                           Wallonia = c(NA, 0.18, NA))
+                           Flanders = c(NA, 0.10, 0.117),
+                           Brussels = c(NA, 0.26, 0.227),
+                           Wallonia = c(NA, 0.18, 0.244))
 
 # means and CI by region
 regions <- c('Flanders', 'Brussels', 'Wallonia')
@@ -156,19 +164,21 @@ get_means_by_region <- function(data){
 
 d_regions <- get_means_by_region(d_n)
 d_regions$sp_nov_2020 <- c(d_sp_studies[2, 3], d_sp_studies[2, 4], d_sp_studies[2, 5])
+d_regions$sp_dec_2020 <- c(d_sp_studies[3, 3], d_sp_studies[3, 4], d_sp_studies[3, 5])
 ```
 
 ```{r plot }
 # Make the graph with the 95% confidence interval
+str(d_regions) 
 library(ggplot2)
 ggplot(d_regions, aes(x=region, y=mean, group=1)) +
     geom_line() +
     geom_errorbar(width=.1, aes(ymin=lower95CI, ymax=upper95CI)) +
     geom_point(shape=21, size=3, fill="white") +
-    ylim(0,15) +
+    ylim(0,17) +
     theme_bw() +
-    labs(title = 'Aandeel natuurlijke immuniteit per regio',
-         subtitle = 'op basis van de officiële tests',
+    labs(title = 'Aandeel natuurlijke immuniteit per regio', 
+         subtitle = paste('op basis van de officiële tests tot', today),
          caption = paste('Verticale lijnen zijn de 95% betrouwbaarheidsintervallen', sep = ' / ', caption ) ,  
          x = "Regio",
          y = "Aandeel (%)")
@@ -180,34 +190,54 @@ Op basis van de officiële tests, heeft Vlaanderen de minste, en Brussel en Wall
 
 De overgrote meerderheid van de besmettingen komt echter niet voor in de statistieken van het aantal bevestigde gevallen. Dat komt omdat die niet-vastgestelde besmettingen vaak mild of zonder klachten verlopen. Ze maken dat de werkelijke immuniteit onder de bevolking dus (veel) hoger is. Bloedonderzoek naar antilichamen geeft een idee van de werkelijke immuniteit.
 
-Zo zien we medio november 2020 per regio deze resultaten:
+Zo zien we in 2020 per regio deze resultaten:
 
 ```{r plot2 }
-# Make the graph with the 95% confidence interval
-library(ggplot2)
-ggplot(d_regions, aes(x=region, y=sp_nov_2020*100, group=1)) +
-    geom_line() +
-    geom_point(shape=21, size=3, fill="white") +
-    ylim(0,30) +
-    theme_bw() +
-    labs(title = 'Medio november 2020: Aandeel natuurlijke immuniteit per regio',
-         subtitle = 'op basis van antilichamen uit bloedonderzoek',
+
+# re-arrange data from wide to long
+library(tidyverse)
+# The arguments to gather():
+# - data: Data object
+# - key: Name of new key column (made from names of data columns)
+# - value: Name of new value column
+# - ...: Names of source columns that contain values
+# - factor_key: Treat the new key column as a factor (instead of character vector)
+data_long <- gather(d_sp_studies, region, value, Flanders:Wallonia, factor_key = T)
+data_long <- data_long[complete.cases(data_long), ]  
+
+plt <- ggplot(data_long, aes(x=region, y=value*100, group=Date))+
+  geom_line() + 
+  geom_point(shape=21, size=3, fill="white") +
+  ylim(0,30) +
+  labs(title = 'Aandeel natuurlijke immuniteit per regio',
+         subtitle = 'op basis van SARS-Cov-2 antilichamen bloeddonoren',
          caption = paste('', sep = ' / ', caption ) ,  
          x = "Regio",
          y = "Aandeel (%)")
+
+# Adding legends 
+plt+geom_line(aes(color=Date)) 
 ```
 
-Deze grafiek toont dezelfde tendens als de officiële besmettingen. Nl, meer afweer in Brussel en Wallonië dan in Vlaanderen.
+Deze grafiek toont dezelfde tendens als de officiële besmettingen: meer natuurlijke afweer in Brussel en Wallonië dan in Vlaanderen.
 
 ```{r estimate-natural-immunity}
 
+# US estimate 90 milj by dec 2020: https://academic.oup.com/cid/article/72/12/e1010/6000389#264829236
+# interesting model to capture underestimation
+
 d_t_raw <- read.csv('~/Documents/wetenschap/covid-19/infosheets/data/COVID19BE_tests.csv')
-if (update) {d_t_raw <- read.csv('https://epistat.sciensano.be/Data/COVID19BE_tests.csv')}
+if (update) {d_t_raw <- read.csv('https://epistat.sciensano.be/Data/COVID19BE_tests.csv')
+write.csv(d_t_raw, file = 'data/COVID19BE_tests.csv', row.names = F, sep = ",")
+}
 
 # correct using seroprevalence (sp) data for PCR tests underestimating true prevalence of infections
-# to get a more precise estimate of underreporting we first sample three periods at least 6 weeks apart
 
+# to get a more precise estimate of underreporting we first sample three periods 4 weeks apart with region data
 sum_uf <- 0
+sum_uf_fl <- 0
+sum_uf_br <- 0
+sum_uf_wa <- 0
 
 for (i in 1:nrow(d_sp_studies)) {
   d_t <- subset(d_t_raw, as.Date(d_t_raw$DATE) < as.character(d_sp_studies[i,1]) )
@@ -215,24 +245,32 @@ for (i in 1:nrow(d_sp_studies)) {
   seropos <- round( d_sp_studies[i,2] * population_be, 0)
   underestimate_factor <- round(seropos / pos_t, 1) 
   sum_uf <- sum_uf + underestimate_factor
-  mean_uf <- round (sum_uf/nrow(d_sp_studies), 2)
   
   if(!is.na(d_sp_studies[i,3]) & !is.na(d_sp_studies[i,4]) & !is.na(d_sp_studies[i,5])) { # we have data for regions
      d_t_fl <- subset(d_t_raw, as.Date(d_t_raw$DATE) < as.character(d_sp_studies[i,1]) & d_t_raw$REGION == regions[1])
      d_t_br <- subset(d_t_raw, as.Date(d_t_raw$DATE) < as.character(d_sp_studies[i,1]) & d_t_raw$REGION == regions[2])
      d_t_wa <- subset(d_t_raw, as.Date(d_t_raw$DATE) < as.character(d_sp_studies[i,1]) & d_t_raw$REGION == regions[3])
-      pos_t_fl <- sum(d_t_fl$TESTS_ALL_POS)
-      pos_t_br <- sum(d_t_br$TESTS_ALL_POS)
-      pos_t_wa <- sum(d_t_wa$TESTS_ALL_POS)
+     pos_t_fl <- sum(d_t_fl$TESTS_ALL_POS)
+     pos_t_br <- sum(d_t_br$TESTS_ALL_POS)
+     pos_t_wa <- sum(d_t_wa$TESTS_ALL_POS)
       seropos_fl <- round( d_sp_studies[i,3] * population_fl, 0)
       seropos_br <- round( d_sp_studies[i,4] * population_br, 0)
       seropos_wa <- round( d_sp_studies[i,5] * population_wa, 0)
       uf_fl <- round(seropos_fl / pos_t_fl, 1) 
       uf_br <- round(seropos_br / pos_t_br, 1)
       uf_wa <- round(seropos_wa / pos_t_wa, 1)
-    
+      sum_uf_fl <- sum_uf_fl + uf_fl
+      sum_uf_br <- sum_uf_br + uf_br
+      sum_uf_wa <- sum_uf_wa + uf_wa
+      # TODO add uf in table, easier to use min and max as lower and upper bounds of estimates
   }
 }
+
+mean_uf <- round (sum_uf/nrow(d_sp_studies), 2)
+mean_uf_fl <- round (sum_uf_fl/nrow(d_sp_studies)-1, 2)
+mean_uf_br <- round (sum_uf_br/nrow(d_sp_studies)-1, 2)
+mean_uf_wa <- round (sum_uf_wa/nrow(d_sp_studies)-1, 2)
+
 
 # adjust regions with underestimation-factor 
 for(i in 1: nrow(d_n)) {
@@ -252,7 +290,8 @@ mean_sp <- round(mean(d_n$rate_adj),1)
 d_n_merged<- left_join(emptymap, d_n, by='NIS5')
 
 # plot
-g_n <- geomap(d_n_merged, rate_adj, TX_DESCR_NL, range(c(0,max(d_n_merged$rate_adj))),"#56B1F7", "#132B43", 'Coronavirus: geschatte natuurlijke immuniteit', '', '% percentage', caption)
+subtitle <- paste('op', today)
+g_n <- geomap(d_n_merged, rate_adj, TX_DESCR_NL, range(c(0,max(d_n_merged$rate_adj))),"#56B1F7", "#132B43", 'Coronavirus: geschatte natuurlijke immuniteit', subtitle, '% percentage', caption)
 
 # save widget to a standalone page to reduce resources and better graphic representation
 saveWidget(g_n, "~/Documents/wetenschap/covid-19/infosheets/plots/immuniteit-p1.html", selfcontained = F, libdir = "lib")
@@ -273,18 +312,19 @@ Deze kaart biedt een overzicht gecorrigeerd per regio. Klik op de afbeelding als
 
 <a href="plots/immuniteit-p1.html" target="_blank"> <img src="img/nat-im.png"/> </a>
 
-```{r vuln_nat_imm, eval=FALSE, include=FALSE}
-# TODO: ### Kwetsbare bevolking
-d_c <- read_csv('~/Documents/wetenschap/covid-19/infosheets/data/COVID19BE_CASES_AGESEX.csv')
-if (update) {
-  d_c <- read_csv('https://epistat.sciensano.be/Data/COVID19BE_CASES_AGESEX.csv') }
-# 90+, 80-89, 70-79
-```
+Je ziet op de kaart dat vooral Brussel en Wallonië een hogere graad van natuurlijke immuniteit hebben.
+
+## Immuniteit door vaccinatie
 
 ```{r vaccination}
+#bug: not all areas are displayed
+
 # vaccination data
 d_v_raw <- read.csv('~/Documents/wetenschap/covid-19/infosheets/data/COVID19BE_VACC_MUNI_CUM.csv')
-if (update) { d_v_raw  <- read.csv('https://epistat.sciensano.be/data/COVID19BE_VACC_MUNI_CUM.csv') }
+
+if (update) { d_v_raw  <- read.csv('https://epistat.sciensano.be/data/COVID19BE_VACC_MUNI_CUM.csv') 
+write.csv(d_v_raw, file = 'data/COVID19BE_VACC_MUNI_CUM.csv', row.names = F, sep = ",")
+}
 d_v <- d_v_raw 
 
 # get latest week data
@@ -335,18 +375,17 @@ d_v_all_merged <- left_join(emptymap, d_v_all, by='NIS5')
 d_v_vuln_merged <- left_join(emptymap, d_v_vuln, by='NIS5')
 
 # blue color palette: "#56B1F7", "#132B43"
-g_v_all <- geomap(d_v_all_merged, rate, TX_DESCR_NL , range(c(0,100)),"#FFFFFF", "#004d4d", 'Coronavirus: immuniteit door vaccinatie', 'Volwassen bevolking', '% percentage', caption)
-g_v_vuln <- geomap(d_v_vuln_merged, rate, TX_DESCR_NL , range(c(0,100)),"#FFFFFF", "#004d4d", 'Coronavirus: immuniteit door vaccinatie', 'Kwetsbare bevolking (ouder dan 75 jaar)', '% percentage', caption)
+subtitle <- paste('Volwassen bevolking op', today)
+g_v_all <- geomap(d_v_all_merged, rate, TX_DESCR_NL , range(c(0,100)),"#FFFFFF", "#004d4d", 'Coronavirus: immuniteit door vaccinatie',subtitle , '% percentage', caption)
+
+subtitle <- paste('Kwetsbare bevolking (ouder dan 75 jaar) op', today)
+g_v_vuln <- geomap(d_v_vuln_merged, rate, TX_DESCR_NL , range(c(0,100)),"#FFFFFF", "#004d4d", 'Coronavirus: immuniteit door vaccinatie', subtitle, '% percentage', caption)
 
 # save widgets
 saveWidget(g_v_vuln, "~/Documents/wetenschap/covid-19/infosheets/plots/immuniteit-p2.html", selfcontained = F, libdir = "lib")
 saveWidget(g_v_all, "~/Documents/wetenschap/covid-19/infosheets/plots/immuniteit-p3.html", selfcontained = F, libdir = "lib")
 
 ```
-
-Je ziet op de kaart dat vooral Brussel en Wallonië een hogere graad van natuurlijke immuniteit hebben.
-
-## Immuniteit door vaccinatie
 
 ### Kwetsbare bevolking
 

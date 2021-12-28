@@ -4,6 +4,8 @@ title: "Infobladen"
 
 > De toekomst verplettert alle voorspellingen
 
+[Enkele checks op veelgehoorde coronaverhalen ivm Zweden](some-basic-checks.html) (22/12/2021)
+
 [Mondmaskers tegen de verspreiding van corona-besmettingen](mondmaskers-besmettingen.html) (9/10/2021)
 
 [Wat zijn de prioriteiten bij het beschermen van de volksgezondheid?](post-5-prioriteiten-volksgezondheid.html) (*update 6/10/2021*) 
@@ -14,9 +16,9 @@ title: "Infobladen"
 
 [Welke immuniteit heeft de Belgische bevolking (part 1)?](herd-immunity.html) (*update 3/9/2021*)
 
-[Brief: Natuurlijke immuniteit is minstens gelijkwaardig aan immuniteit na vaccinatie](https://frederikfeys.be/natuurlijke-immuniteit/) (27/8/2021)
+[Brief: Natuurlijke immuniteit is minstens gelijkwaardig aan immuniteit na vaccinatie](/natuurlijke-immuniteit/) (27/8/2021)
 
-[Brief: Verantwoording Mondmaskers](https://frederikfeys.be/mondmasker/) (26/7/2021)
+[Brief: Verantwoording Mondmaskers](/mondmasker/) (26/7/2021)
 
 [Statistieken van de geestelijke gezondheid sinds coronacrisis](geestelijke-gezondheid.html) (*update 16/6/2021*)
 
@@ -31,6 +33,6 @@ title: "Infobladen"
 
 [Kunnen we COVID-19 doen verdwijnen? Een blik vanuit Zweden.](post-6-covid-verdwijnen.html) (*update 24/9/2020*)
 
-[Psychologie van de grafiek](post-8-psychologie-statistiek.html)
+[Psychologie van de grafiek](post-8-psychologie-statistiek.html) (8/8/2020)
 
-[Op bewijs of op angst gebaseerde maatregelen?](post-4-angst-bewijs-maatregelen.html)
+[Op bewijs of op angst gebaseerde maatregelen?](post-4-angst-bewijs-maatregelen.html) (22/7/2020)

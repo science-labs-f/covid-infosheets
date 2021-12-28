@@ -1,57 +1,66 @@
 ---
 title: "Wat zijn de prioriteiten bij het beschermen van de volksgezondheid?"
 author: "FF"
-date: "7/24/2020"
+date: "6/10/2021"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(readr)
 setwd("~/Documents/wetenschap/covid-19/infosheets")
 ```
 
-[Dit](https://www.healthybelgium.be/en/health-status/mortality-and-causes-of-death/premature-mortality-by-cause) is een goede pagina als je de coronadoden in perspectief wil brengen met de volksgezondheid. Wat veroorzaakt de grootste verliezen (en omgekeerd de mogelijk winsten) voor de volksgezondheid? Hoe past COVID-19 in dit rijtje? 
+[Dit](https://www.healthybelgium.be/en/health-status/mortality-and-causes-of-death/premature-mortality-by-cause) is een goede pagina als je de coronadoden in perspectief wil brengen met de prioriteiten bij volksgezondheid. Wat veroorzaakt de grootste verliezen (en omgekeerd de mogelijk winsten) voor de volksgezondheid? Hoe past COVID-19 in dit rijtje? 
 
-De verliezen in volksgezondheid kan je uitdrukken als: wat zjn de levensjaren die we verliezen door een bepaalde oorzaak -> 'de potentieel verloren levensjaren' (PYLL). 
+De verliezen in volksgezondheid kan je uitdrukken als: wat zjn de levensjaren die we verliezen door een bepaalde oorzaak voor de leeftijd van 75 -> 'de potentieel verloren levensjaren' (PYLL).*
 
 Aan de slag!
 
-Eerst zoek ik bij [Sciensano](https://datastudio.google.com/embed/reporting/c14a5cfc-cab7-4812-848c-0369173148ab/page/QTSKB) de recente sterftecijfers voor COVID-19 bij mannen en vrouwen. 
+Eerst zoek ik bij [Sciensano](https://datastudio.google.com/embed/reporting/c14a5cfc-cab7-4812-848c-0369173148ab/page/QTSKB) de sterftecijfers tijdens 2020 voor COVID-19 bij mannen en vrouwen. 
 
-
-
-```{r echo=F}
-pop = 11431406
+```{r calculate-covid-PYLL, echo=F, include=FALSE}
 
 # we analyse those aged < 75
 age_group <- c("0-24", "25-44", "45-64", "65-74")
 
-# covid deaths follow log curve, so assume 75 percentile is the median 
-age_group_median <- c(18, 39, 59, 69)
-deaths <- c(0, 17, 166, 342)
+# covid deaths follow a log curve, so let's assume 75 percentile is the median 
+age_group_median <- c(21.5, 41.5, 61.5, 71.5)
+age_weights <- read.csv('data/standpopnew_euronew.csv')
+age_weights <- c(6000, 7000, 6000, 5000)
 
-f_d <- data.frame(age_group, age_group_median, deaths)
+age_group_pop <- c(1190735, 1443814, 1533669, 697767)
+deaths <- c(0, 37, 371, 846)
+f_d <- data.frame(age_group, age_group_median, age_weights, age_group_pop, deaths)
 
-deaths <- c(0, 20, 325, 633)
-m_d <- data.frame(age_group, age_group_median, deaths)
+age_group_pop <- c(1246832, 1455863, 1558321, 669471)
+deaths <- c(0, 49, 742, 1544)
+m_d <- data.frame(age_group, age_group_median, age_weights, age_group_pop, deaths)
 
 # we analyse those aged < 75
 ref_age=75
 
-PYLL75.get <- function(d, ref_age, pop) {
-  PYLL75 = 0
+PYLL75.get <- function(d, ref_age) {
+  age_adjusted_PYLL_rate <- 0
   for (row in 1:nrow(d)) {
     deaths <- d[row, "deaths"]
     age_group_median <- d[row, "age_group_median"]
+    age_weight <- d[row, "age_weights"]
+    age_group_pop <- d[row, "age_group_pop"]
     # covid deaths follow log curve, so assume 75 percentile is the median 
-    PYLL75 <- PYLL75 + (ref_age - age_group_median) * deaths
+    PYLL75 <- (ref_age - age_group_median) * deaths
+    print(paste('PYLL75', PYLL75))
+    age_specific_PYLL_rate <- PYLL75 / age_group_pop * 100000
+    print(age_specific_PYLL_rate)
+    age_adjusted_PYLL_rate <- age_adjusted_PYLL_rate + (age_specific_PYLL_rate * age_weight)
+    print(age_adjusted_PYLL_rate)
   }
-  PYLL75_rate = round(PYLL75 / pop * 100000,0)
-  return(PYLL75_rate)
+  age_adjusted_PYLL_rate = round(age_adjusted_PYLL_rate / 24000,0)
+  return(age_adjusted_PYLL_rate)
 }
 
-f_PYLL75_rate <- PYLL75.get(f_d, ref_age, pop)
-m_PYLL75_rate <- PYLL75.get(m_d, ref_age, pop)
+f_PYLL75_rate <- PYLL75.get(f_d, ref_age)
+m_PYLL75_rate <- PYLL75.get(m_d, ref_age)
 ```
 
 
@@ -62,8 +71,8 @@ m_prem_death <- read.csv("data/YYL_M.csv")
 new_f_prem_death <- rbind(f_prem_death, data.frame(Category="COVID-19", PYLL.rate=f_PYLL75_rate))
 new_m_prem_death<- rbind(m_prem_death, data.frame(Category="COVID-19", PYLL.rate=m_PYLL75_rate)) 
 ```
-Alles samen met de voortijdige sterfte krijgen we dit staafdiagramma:
 
+Alles samen met de voortijdige sterfte krijgen we dit staafdiagramma:
 
 ```{r echo=F}
 #order first
@@ -88,7 +97,7 @@ plot.it(new_m_prem_death, title="Top oorzaken van voortijdige sterfte (voor 75)
           bij mannen, Belgie")
 ```
 
-Bij mannen is het minderen van zelfmoord (depressie) dé uitdaging voor een betere volksgezondheid. Dan volgen longkanker (roken), en hartfalen (stress en sedentair leven). Ook ongevallen door verkeer & transport halen de volksgezondheid naar beneden. Interessant is dat COVID-19 pas op de 11 de plaats komt. Dat staat in schril contrast met de aandacht die het vandaag krijgt in het veranderen van onze levensgewoonten. Nochtans maakt zelfmoord 7 keer meer doden dan COVID-19.  
+Bij mannen is het minderen van zelfmoord (depressie) dé uitdaging voor een betere volksgezondheid. Dan volgen longkanker (roken), en covid-19. Ook ongevallen door verkeer & transport halen de volksgezondheid naar beneden. Zelfmoord maakt dus tweemaal meer verliezen aan volksgezondheid dan covid-19.  
 
 ## Vrouwen
 ```{r echo=F}
@@ -97,11 +106,11 @@ plot.it(new_f_prem_death, title="Top oorzaken van voortijdige sterfte (voor 75)
           bij vrouwen, Belgie")
 ```
 
-Bij de vrouwen zie ik dat zelfmoord een belangrijke uitdaging blijft voor een betere volksgezondheid. Echter borstkanker en longkanker staan nog iets hoger. Alweer opvallend, COVID-19 staat helemaal onderaan. Borstkanker maakt 6 keer meer slachtoffers dan COVID-19. 
-
-Er is een onzekerheid rond de COVID-19 cijfers. De epidemiegolf is voorbij in België. We weten echter niet wat de rest van 2020 zal brengen. 
+Bij de vrouwen zie ik dat zelfmoord een belangrijke uitdaging blijft voor een betere volksgezondheid. Echter borstkanker en longkanker staan nog iets hoger. Covid-19 staat op de vierde plaats.
 
 ## Besluit
 
-Ondanks de coronacrisis, ligt de echte uitdaging voor het beschermen van de Belgische volksgezondheid bij het verminderen van zelfmoord, longkanker en borstkanker. 
+**Ondanks de coronacrisis, ligt de echte uitdaging voor het beschermen van de Belgische volksgezondheid nog steeds bij het verminderen van zelfmoord, longkanker en borstkanker.**
+
+*Leeftijdsspecifieke PYLL-percentages worden berekend door het aantal PYLL in een bepaalde leeftijdsgroep te delen door het aantal mensen in die leeftijdsgroep. Vervolgens wordt een leeftijdsgecorrigeerd PYLL-percentage berekend als een gewogen gemiddelde van de leeftijdsspecifieke PYLL-percentages tot 75 jaar. 75 jaar wordt als limiet gebruikt in de [Organisation for Economic Co-operation and Development (OECD) gezondheidstatistieken](https://data.oecd.org/healthstat/potential-years-of-life-lost.htm). 
 

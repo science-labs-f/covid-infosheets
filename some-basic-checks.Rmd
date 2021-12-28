@@ -1,0 +1,54 @@
+---
+title: "Enkele checks op veelgehoorde coronaverhalen ivm Zweden"
+author: "FF"
+date: "12/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+options(scipen = 999) # disable scientific notation of numbers
+```
+
+
+```{r}
+dens <- read.csv('data/population-density.csv')
+urban <- read.csv('data/share-of-population-urban.csv')
+deaths_1m <- read.csv('data/owid-covid-data.csv')
+
+# get recent data only
+dens <- subset(dens, Year == 2018)
+urban <- subset(urban, Year == 2020)
+urban['iso_code'] = urban$Code
+deaths_1m <- subset(deaths_1m, date == "2021-12-21")
+
+# glue
+urban_deaths_1m <- merge(urban, deaths_1m, by='iso_code')
+
+```
+
+```{r}
+corr_dens <- cor.test(deaths_1m$total_deaths_per_million, deaths_1m$population_density)
+corr_urban <- cor.test(urban_deaths_1m$total_deaths_per_million, urban_deaths_1m$Urban.population....of.total.population.)
+corr_share_older <- cor.test(deaths_1m$total_deaths_per_million, deaths_1m$aged_70_older)
+corr_stringency <- cor.test(deaths_1m$total_deaths_per_million, deaths_1m$stringency_index)
+corr_vax <- cor.test(deaths_1m$total_deaths_per_million, deaths_1m$people_fully_vaccinated_per_hundred)
+```
+
+Zweden kenmerkt zich door een andere aanpak dan België. Bij vergelijkingen ontstaan snel discussies over zin/onzin van strenge maatregelen, bevolkingsdichtheid versus urbanisatie enz...
+
+Ik gebruikte de data van [Our World In Data](https://ourworldindata.org). Dit betekent dat alle landen wereldwijd in de analyse zijn opgenomen. Het aantal sterfgevallen is de som van alle sterfgevallen per miljoen geteld tot op heden.
+
+Interpretatie: 
+
++ p-waarde < 0,05 betekent significant
++ associaties liggen tussen 0 (geen associatie) en 1 (volledige associatie)
++ een relevant verband (significantie en verband > 0.30) wil niet zeggen dat het de oorzaak is van sterfte gerelateerd aan covid
+
+Resultaten:
+
++ Het verband tussen sterfgevallen en bevolkingsdichtheid is  `r corr_dens['estimate']` and p-value = `r corr_dens['p.value']`
++ Het verband tussen sterfgevallen en verstedelijking is `r corr_urban['estimate']` and p-value = `r corr_urban['p.value']`
++ Het verband tussen het aantal sterfgevallen en de striktheid van de coronamaatregelen is `r corr_stringency['estimate']` and p-value = `r corr_stringency['p.value']`
+
+Conclusie: Bij het voorkomen van sterfgevallen als gevolg van corona is er geen verband met de bevolkingsdichtheid of de striktheid van de coronamaatregelen. Wel is er een verband met verstedelijking. 
