@@ -1,0 +1,331 @@
+---
+title: "Risico's per leeftijd"
+author: "FF"
+date: "29/12/2021"
+output: 
+  html_document:
+    toc: TRUE
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, messages = FALSE)
+setwd("~/Documents/wetenschap/covid-19/infosheets")
+options(scipen = 999) # disable scientific notation of numbers
+
+library(readr)
+library(stringr)
+library(lubridate)
+library(tidyverse)
+library (dplyr)
+library(data.table)
+
+update <- F # set to TRUE to get latest live data
+caption <- "Made by: @FFeys / Data: Sciensano, BelSTAT" # ggplot credidentials displayed on mappings 
+```
+
+```{r include=FALSE}
+pop_age <- bevolking_age <- read_delim("data/bevolking_age.csv", 
+    delim = ";", escape_double = FALSE, trim_ws = TRUE)
+pop_5_11 <- sum(subset(pop_age, pop_age$age >= 5 & pop_age$age <= 11))
+hosp_5_11 <- 135
+risk_hosp <- 1/ ( (hosp_5_11/pop_5_11) / 21*12) # calculate yearly risk
+risk_ic_hosp <- 1/ ( (20/pop_5_11) /21*12 )
+```
+
+Op 17 december 2021 bracht de Hoge Gezondheidsraad (HGR) het [rapport](https://www.health.belgium.be/nl/node/40375) 'Vaccinatie tegen COVID-19 voor kinderen van 5-11 jaar' uit. Het rapport meldt dat sinds het begin van de pandemie er `r hosp_5_11` kinderen tussen 5 en 11 jaar in het ziekenhuis zijn opgenomen wegens symptomen van COVID-19. Daarbij blijft het onduidelijk of patiënten worden opgenomen *vanwege* COVID-19 of *met* COVID-19. De reden van opname was onduidelijk bij nog eens 98 andere kinderen. Ze hadden wel een positieve covid-19 test. 20 kinderen (15%) hadden intensieve zorgen nodig. 10 kinderen hadden ontstekingen over meerdere organen (MIS-C) en 10 kinderen hadden onderliggende aandoeningen. Alle kinderen overleefden hun covid-verwikkelingen. Na drie 3 dagen (mediaan) mochten alle kinderen terug naar huis. 
+
+Op basis van de bovenstaande gegevens die 21 maanden bestrijken, kan je stellen dat het jaarlijks risico op een covid-gerelateerde hospitaalopname voor 5 tot 11 jarigen, 1 op de `r formatC(risk_hosp, format='f', big.mark='.', digits=0, decimal.mark=",") ` is. En voor een opname op intensieve zorgen 1 op de `r formatC(risk_ic_hosp, format='f', big.mark='.', digits=0, decimal.mark=",")` .
+
+## Kan ik het risico op hospitalisatie wegens covid-symptomen bij kinderen tussen de 5 en 11 jaar herproduceren ?
+
+Laat ik de data uit het rapport verifiëren. Ik gebruik de Sciensano [hospitalisaties dataset](https://epistat.sciensano.be/Data/COVID19BE_HOSP.csv) en koppel die aan het aandeel hospitalisaties per leeftijd*. Zo kan ik de absolute aantallen per leeftijd inschatten. En het risico bepalen. 
+
+```{r hospital-risk, include=FALSE}
+
+# manulaly get relative data on https://datastudio.google.com/embed/reporting/c14a5cfc-cab7-4812-848c-0369173148ab/page/JL1qB
+hosp_rel_age <- read_csv("data/Belgium COVID-19 Dashboard - Sciensano_Hospitalizations 2_Tijdreeks.csv")  
+hosp <- read_csv("https://epistat.sciensano.be/Data/COVID19BE_HOSP.csv")
+if (update) {
+  hosp <- read.csv('https://epistat.sciensano.be/Data/COVID19BE_HOSP.csv')
+  write.csv(hosp, file = 'data/COVID19BE_HOSP.csv', row.names = F, sep = ",")
+}
+
+hosp_rel_age['WkNr'] <- as.numeric(gsub(".*?([0-9]+).*)$", "\\1", hosp_rel_age$`Jaar week` ))
+hosp_rel_age['Yr'] <- as.numeric(gsub(".*?([0-9][0-9][0-9][0-9]+).*", "\\1", hosp_rel_age$`Jaar week` ))
+hosp_rel_age['YrWk'] <- paste(hosp_rel_age$Yr ,hosp_rel_age$WkNr, sep = "-W") 
+
+## add leading zero weeknr
+hosp_rel_age$YrWk <- ifelse(str_length(hosp_rel_age$YrWk) == 7, paste(hosp_rel_age$Yr , hosp_rel_age$WkNr, sep = "-W0"),  hosp_rel_age$YrWk)  
+
+# strip last two weeks (website: 'The last 2 weeks may still vary, as all data has not been reported yet')
+d_2020 <- filter(hosp_rel_age, Yr == 2020)
+d_2021 <- filter(hosp_rel_age, Yr == 2021)
+max_wknr <- max(d_2021$WkNr)
+d_2021 <- filter(d_2021, WkNr < max_wknr-1)
+
+# 1 year risk, so get 53 weeks of data
+records_add <- 53 - max_wknr
+min_wknr <- 53 - records_add
+d_2020 <- filter(d_2020, WkNr >= min_wknr)
+
+# combine tables
+d <- rbindlist(list(d_2020, d_2021))
+
+# prepare absolute data table
+hosp['YrWk'] <-strftime(hosp$DATE, format = "%Y-W%V")
+
+## aggregate on weeknr
+hosp_wk <- aggregate(NEW_IN ~ YrWk, hosp, FUN = sum, na.rm = T)
+
+# Cross join: 
+hosp_merged <- merge(x = d, y = hosp_wk)
+hosp_merged <- rename(hosp_merged, new_in_wk = NEW_IN)
+
+# rework var Hospitalisations
+hosp_merged$hosp_rate <- as.numeric(gsub(".*?([0-9]+).*%$", "\\1", hosp_merged$Hospitalisations )) / 100
+hosp_merged$new_in <- hosp_merged$new_in_wk * hosp_merged$hosp_rate 
+
+# complete cases only
+d <- hosp_merged[complete.cases(hosp_merged), ]
+sum_1yr_hosp <- sum(d$new_in)
+
+d <- aggregate(new_in ~ AgeGroup, d, FUN = "sum")
+```
+
+De totalen in de gematchete data en de waarden op de Sciensano monitor komen goed overeen. De dataset levert `r formatC(sum_1yr_hosp, format='f', big.mark='.', digits=0, decimal.mark=",")` hospitalisaties voor de afgelopen 53 weken (7/12 2020 t/m 5/12/2021). De Sciensano monitor rapporteert 46.707 hospitalisaties. 
+
+In de Sciensano data is er geen leeftijdsgroep van 5 t/ 11 jaar. Enkel 6 t/m 19. Via extrapolatie maak ik de leeftijdsgroep aan. [overschatting?] Hierbij neem ik aan dat de kans op hospitalisatie gelijkaardig is over alle leeftijden van 6 t/m 19 jaar. 
+
+```{r include=FALSE}
+# from agegroup 06–19 we build agegroup 05-11, we assume equal risks accross ages
+# 14 years / 7 yrs
+hosp_abs_06_19 <- d[which(d$AgeGroup=="06–19"),2]
+hosp_abs_05_11 <- hosp_abs_06_19 / 14 * 7
+```
+
+Uit de dataset volgen `r formatC(hosp_abs_05_11, format='f', big.mark='.', digits=0, decimal.mark=",")` covid-gerelateerde hospitalisaties in de aangemaakte leeftijdsgroep van 5 t/ 11 jaar. Dat is -zeker gezien het over 1 jaar gaat- veel hoger dan de hogervermelde `r hosp_5_11` kinderen voor de hele pandemieperiode [overschatting?]. 
+
+Conclusie: Reproduceren vanuit de datasets van Sciensano levert een ander resultaat dan vermeldt in het HGR rapport.. 
+
+Remedie:
+
+* Sciensano dataset met de absolute aantallen nieuwe hospitalisaties per leeftijd
+
+## Is het deel 5 tot 11 jarigen zeer klein t.o.v alle covid-gerelateerde hospitalisaties ? 
+
+```{r include=FALSE}
+rate_kids <- hosp_abs_05_11 / sum_1yr_hosp *100
+```
+
+Op basis van de gecreëerde dataset:
+
+`r formatC(rate_kids, format='f', digits=2, decimal.mark=",")` % van de covid-gerelateerde hospitalisaties waren in de leeftijdsgroep van 5 t/ 11 jaar. 
+
+Conclusie: Ja, een zeer klein deel. 
+
+## Wat is de 1-jaars kans op een covid-gerelateerde hospitalisatie per leetijd ?
+
+```{r risk-age, include=FALSE}
+d$pop <- 0
+pop_00_05 <- sum(subset(pop_age, pop_age$age >= 0 & pop_age$age <= 5))
+pop_06_19 <- sum(subset(pop_age, pop_age$age >= 6 & pop_age$age <= 19))
+pop_20_39 <- sum(subset(pop_age, pop_age$age >= 20 & pop_age$age <= 39))
+pop_40_59 <- sum(subset(pop_age, pop_age$age >= 40 & pop_age$age <= 59))
+pop_60_79 <- sum(subset(pop_age, pop_age$age >= 60 & pop_age$age <= 79))
+pop_80_ <- sum(subset(pop_age, pop_age$age >= 80 ))
+
+d[which(d$AgeGroup=="00–05"),3] <- pop_00_05
+d[which(d$AgeGroup=="06–19"),3] <- pop_06_19
+d[which(d$AgeGroup=="20–39"),3] <- pop_20_39
+d[which(d$AgeGroup=="40–59"),3] <- pop_40_59
+d[which(d$AgeGroup=="60–79"),3] <- pop_60_79
+d[which(d$AgeGroup=="80–++"),3] <- pop_80_
+
+d$risk <- 1/ (d$new_in / d$pop)
+d$risk_100k <- d$new_in / d$pop * 100000
+d$no_risk_100k <- 100000 - d$risk_100k
+```
+
+```{r plot1, echo=FALSE}
+library(ggplot2) # cheatsheet https://github.com/rstudio/cheatsheets/blob/main/data-visualization-2.1.pdf
+library(tidyr)
+
+f <- ggplot(data = d, aes(x=AgeGroup, y=risk_100k))+
+  geom_bar(stat='identity')+
+  ggtitle('Jaarlijks aantal covid-gerelateerde opnames per 100.000 mensen')+
+  labs(x='Leeftijdsgroep', y='Opnames', caption = caption)+
+  geom_text(aes(label = round(risk_100k, digits = 0), vjust = -0.5))
+
+print(f) 
+```
+
+Deze grafiek toont hoe het risico op een hospitalisatie zeer sterk afhangt van de leeftijd. Voor de 80 plussers lijkt dit vrij spectaculair. Toch is er context nodig. Laten we per leeftijdsgroep de mensen die vrij van een ziekenhuisopname blijven, ook tonen.
+
+```{r plot2, echo=FALSE}
+# data from wide to long
+data_long <- gather(d, condition, measurement, risk_100k:no_risk_100k, factor_key=TRUE)
+
+f_full <- ggplot(data = data_long, aes(x=AgeGroup, y=measurement, fill=condition))+
+  geom_bar(position="stack",stat='identity')+
+  ggtitle('Jaarlijks aantal mensen met & zonder covid-gerelateerde opname per 100.000')+
+  labs(x='Leeftijdsgroep', y='Opnames', caption = caption)
+
+print(f_full)
+```
+
+1 jaar blootstelling aan het coronavirus geeft grote groepen mensen van verschillende leeftijden die vrij van hospitalisatie blijven. Zelfs bij de zeer oude mensen is dit een verrassend grote groep. 
+
+### Hoe vergelijkt dit met andere risico's ?
+
+#### Risico betrokken te zijn in een verkeersongeval
+
+Het verkeersrisico bereken ik op basis van de laatste 5 jaar. Omdat er in 2020 veel minder verkeer was dan normaal, is het niet representatief voor een normaal jaar. Ik gebruik dus de [StatBel data](https://bestat.statbel.fgov.be/bestat/crosstable.xhtml?view=9090f429-32f6-40c3-a685-04cef7b6b0f1) van 2019 t/m 2015.
+
+
+```{r include=FALSE}
+
+vsl <- read_csv("data/verkeerslachtoffers-lft.csv")
+
+# lets clean data and make 5-yr average
+# method remark: sum of Leeftijdsklasse 'alle leeftijden' includes 'Niet beschikbaar'
+# str(vsl)
+
+vsl <- subset(vsl, Jaar <= 2019 & Jaar >= 2015)
+
+# add all ages category
+vsl$Leeftijdsklasse[is.na(vsl$Leeftijdsklasse)] <- 'Alle leeftijden'
+
+# convert Leeftijdsklasse to factor
+vsl$Leeftijdsklasse = as.factor(vsl$Leeftijdsklasse)
+
+#re-order factor levels for Leeftijdsklasse
+# levels(vsl$Leeftijdsklasse)
+vsl$Leeftijdsklasse <- factor(vsl$Leeftijdsklasse, levels=c("0 tot 4 jaar", "5 tot 9 jaar", "10 tot 14 jaar"  , "15 tot 19 jaar" ,  "20 tot 24 jaar"  , "25 tot 29 jaar", "30 tot 34 jaar",  "35 tot 39 jaar", "40 tot 44 jaar", "45 tot 49 jaar", "50 tot 54 jaar", "55 tot 59 jaar", "60 tot 64 jaar" , "65 tot 69 jaar", "70 tot 74 jaar", "75 jaar en meer", "Alle leeftijden" , "Niet beschikbaar"))
+
+# for data where ages are not available -> spread equally over age groups
+vsl_na <- subset(vsl, Leeftijdsklasse == "Niet beschikbaar")
+
+# how many levels in Leeftijdsklasse
+cats <- length(unique(vsl$Leeftijdsklasse)) - 2 # 'alle leeftijden' and "Niet beschikbaar" are skipped
+
+for (i in 1:nrow(vsl_na)) {
+  year <- vsl_na[i, 3]
+  victims_to_add <- vsl_na[i, 4] / cats
+  
+  for (j in 1: nrow(vsl)) {
+    if (vsl[j,3] == year) {
+      if ( vsl[j,2] != "Niet beschikbaar" && vsl[j,2] != "Alle leeftijden"){
+        # add 
+      vsl[j, 4] <- vsl[j, 4] + victims_to_add
+      }
+    }
+  }
+}
+
+# since we spread 'Niet beschikbaar' age group data, we can clear 'Niet beschikbaar' 
+vsl <- subset(vsl, Leeftijdsklasse != "Niet beschikbaar")
+
+# aggregate: 5 year means by Leeftijdsklasse
+vsl_5 <- aggregate(`Aantal slachtoffers` ~ Leeftijdsklasse, vsl, FUN = mean, na.rm = T)
+
+
+# calculate risks by age
+vsl_5$pop <- 0
+
+#create labels for age groups consistent with prior formatting
+# vsl_5$Agegroup <- c('00-04', '05-09', '10-14', '15-19', '20-24', '25-29', '30-34', '35-39', '00-04', '00-04', '00-04', '00-04')
+
+vsl_5[which(vsl_5$Leeftijdsklasse=="0 tot 4 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 0 & pop_age$age <= 4))
+vsl_5[which(vsl_5$Leeftijdsklasse=="5 tot 9 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 5 & pop_age$age <= 9))
+vsl_5[which(vsl_5$Leeftijdsklasse=="10 tot 14 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 10 & pop_age$age <= 14))
+vsl_5[which(vsl_5$Leeftijdsklasse=="15 tot 19 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 15 & pop_age$age <= 19))
+vsl_5[which(vsl_5$Leeftijdsklasse=="20 tot 24 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 20 & pop_age$age <= 24))
+vsl_5[which(vsl_5$Leeftijdsklasse=="25 tot 29 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 25 & pop_age$age <= 29))
+vsl_5[which(vsl_5$Leeftijdsklasse=="30 tot 34 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 30 & pop_age$age <= 34))
+vsl_5[which(vsl_5$Leeftijdsklasse=="35 tot 39 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 35 & pop_age$age <= 39))
+vsl_5[which(vsl_5$Leeftijdsklasse=="40 tot 44 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 40 & pop_age$age <= 44))
+vsl_5[which(vsl_5$Leeftijdsklasse=="45 tot 49 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 45 & pop_age$age <= 49))
+vsl_5[which(vsl_5$Leeftijdsklasse=="50 tot 54 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 50 & pop_age$age <= 54))
+vsl_5[which(vsl_5$Leeftijdsklasse=="55 tot 59 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 55 & pop_age$age <= 59))
+vsl_5[which(vsl_5$Leeftijdsklasse=="60 tot 64 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 60 & pop_age$age <= 64))
+vsl_5[which(vsl_5$Leeftijdsklasse=="65 tot 69 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 65 & pop_age$age <= 69))
+vsl_5[which(vsl_5$Leeftijdsklasse=="70 tot 74 jaar"),3] <- sum(subset(pop_age, pop_age$age >= 70 & pop_age$age <= 74))
+vsl_5[which(vsl_5$Leeftijdsklasse=="75 jaar en meer"),3] <- sum(subset(pop_age, pop_age$age >= 75 ))
+vsl_5[which(vsl_5$Leeftijdsklasse=="Alle leeftijden"),3] <- sum(subset(pop_age, pop_age$age >= 0 ))
+
+
+vsl_5$risk <- 1/ (vsl_5$`Aantal slachtoffers` / vsl_5$pop)
+vsl_5$risk_100k <- vsl_5$`Aantal slachtoffers` / vsl_5$pop * 100000
+vsl_5$no_risk_100k <- 100000 - vsl_5$risk_100k
+```
+```{r echo=FALSE}
+# plot
+t <- ggplot(data = vsl_5, aes(x=Leeftijdsklasse, y=risk_100k))+
+  geom_bar(stat='identity')+
+  ggtitle('Jaarlijks aantal verkeersslachtoffers per 100.000 mensen')+
+  labs(x='Leeftijdsgroep', y='Slachtoffers', caption = '@ffeys, data Belstat')+
+  geom_text(aes(label = round(risk_100k, digits = 0), vjust = -0.5))+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
+print(t) 
+```
+
+
+Laat ik nu voor elke leeftijd tonen wat het verschil in risico is tussen betrokken raken in een verkeersongeval of een covid-gerelateerde ziekenhuisopname.
+
+```{r difference, include=FALSE}
+# TO DO
+# Convert broad age categories in data d to smaller age categories  
+
+# convert traffic (t) age categories to broader age cats as in data d
+AgeGroup <- c('00–05', '06–19', '20–39','40–59','60–79', '80–++', 'Alle leeftijden')	
+
+c00_05 <-vsl_5[which(vsl_5$Leeftijdsklasse =='0 tot 4 jaar'),2] + (vsl_5[which(vsl_5$Leeftijdsklasse =='5 tot 9 jaar'),2] / 5)
+c06_19 <- (vsl_5[which(vsl_5$Leeftijdsklasse =='5 tot 9 jaar'),2] / 5 * 4) + vsl_5[which(vsl_5$Leeftijdsklasse =='10 tot 14 jaar'),2] + vsl_5[which(vsl_5$Leeftijdsklasse =='15 tot 19 jaar'),2]
+c20_39 <- vsl_5[which(vsl_5$Leeftijdsklasse =='20 tot 24 jaar'),2]  + vsl_5[which(vsl_5$Leeftijdsklasse =='25 tot 29 jaar'),2] + vsl_5[which(vsl_5$Leeftijdsklasse =='30 tot 34 jaar'),2] + + vsl_5[which(vsl_5$Leeftijdsklasse =='35 tot 39 jaar'),2]
+c40_59 <- vsl_5[which(vsl_5$Leeftijdsklasse =='40 tot 44 jaar'),2] + vsl_5[which(vsl_5$Leeftijdsklasse =='45 tot 49 jaar'),2] + vsl_5[which(vsl_5$Leeftijdsklasse =='50 tot 54 jaar'),2] + vsl_5[which(vsl_5$Leeftijdsklasse =='55 tot 59 jaar'),2]
+c60_79 <- vsl_5[which(vsl_5$Leeftijdsklasse =='60 tot 64 jaar'),2] + vsl_5[which(vsl_5$Leeftijdsklasse =='65 tot 69 jaar'),2] + vsl_5[which(vsl_5$Leeftijdsklasse =='70 tot 74 jaar'),2] + (vsl_5[which(vsl_5$Leeftijdsklasse =='75 jaar en meer'),2] / 25 * 5) # I assume oldest age group includes people aged up to 100
+c80_ <- (vsl_5[which(vsl_5$Leeftijdsklasse =='75 jaar en meer'),2] / 25 * 20)
+all_ages <- vsl_5[which(vsl_5$Leeftijdsklasse =='Alle leeftijden'),2]
+
+  
+Casualties <- c(c00_05, c06_19, c20_39, c40_59, c60_79, c80_, all_ages)
+t <- data.frame(AgeGroup, Casualties)
+
+# add all ages estimate to d dataset
+j <- d
+
+j[nrow(j) + 1,] = c('Alle leeftijden', sum(j$new_in), sum(pop_age$n), 1/ (sum(j$new_in)/sum(pop_age$n)), sum(j$new_in) / sum(pop_age$n) * 100000, 100000 - (sum(j$new_in) / sum(pop_age$n) * 100000))
+
+d <- j
+
+#adjust risks
+d_diff <- merge(d, t)
+d_diff$diff <- as.numeric(d_diff$new_in) - d_diff$Casualties
+d_diff$diff_risk_100k <- d_diff$diff / as.numeric(d_diff$pop) * 100000
+```
+
+```{r echo=FALSE}
+# graph it
+ggplot(data = d_diff, aes(x=AgeGroup, y=diff_risk_100k, fill= diff_risk_100k < 0))+
+  geom_bar(stat='identity')+
+  scale_fill_manual("Meer verkeersrisico", values = c("lightblue", "firebrick")) +
+  ggtitle('Verschil aantal verkeersslachtoffers tov covid-gerel. opnames')+
+  labs(subtitle = 'Jaarlijks riscio per 100.000 mensen', x='Leeftijdsgroep', y='Verschil', caption = caption)+
+  geom_text(aes(label = round(diff_risk_100k, digits = 0), vjust = -0.5))
+```
+
+Interpretatie: Per 100.000 20 tot 39 jarigen zullen er 553 *meer* door het verkeer slachtoffer worden dan in het ziekenhuis te belanden wegens covid. Interessant is dat de 60 tot 79 jarigen ongeveer hetzelfde extra risico (517) dragen voor covid-opname. 
+
+De grafiek toont dat voor mensen tot 60 jaar, het verkeer een groter risico is dan een covid-opname. Voor oudere leeftijden is covid een hoger risico. Daarbij steeds in het achterhoofd houden dat de beide risico's op zich klein zijn (zie Figuur hogerop). Het verkeersrisico is voor de hele bevolking ongeveer (-32) hetzelfde als het risico op een covid-opname. 
+
+Met deze data, stellen zich vragen:
+
++ Als de risico's gelijk zijn, waarom zijn er in het verkeer dan geen bijkomende maatregelen ? 
++ Waarom dan wél zeer drastische maatregelen voor covid ?
++ Waarom aanvaarden we wél de verkeersrisico's voor het jongere deel van de bevolking ? 
+
+
+
+*De relatieve data vind je door rechtermuisklik 'exporteren' op grafiek pagina 2 van de hospitalisaties (https://datastudio.google.com/embed/reporting/c14a5cfc-cab7-4812-848c-0369173148ab/page/JL1qB). 
