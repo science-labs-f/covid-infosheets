@@ -4,6 +4,8 @@ title: "Infobladen"
 
 > De toekomst verplettert alle voorspellingen
 
+[Welk risico heb je op hospitalisatie ?](risks.html) (29/12/2021)
+
 [Enkele checks op veelgehoorde coronaverhalen ivm Zweden](some-basic-checks.html) (22/12/2021)
 
 [Mondmaskers tegen de verspreiding van corona-besmettingen](mondmaskers-besmettingen.html) (9/10/2021)
